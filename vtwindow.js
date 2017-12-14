@@ -1,8 +1,6 @@
-
-var unique = 0;
-
 /**
- * A Virtual window system in the browser 
+ * A Virtual windows system for the browser written in vanilla js
+ * @see https://github.com/victornpb/VtWindow
  * @author Victor N. wwww.victorborges.com
  */
 class VtWindow {
