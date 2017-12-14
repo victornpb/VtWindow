@@ -1,0 +1,115 @@
+.vt-window {
+    background: white;
+    border-radius: 6px;
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+
+    &.virtual {
+        position: fixed;
+        z-index: 9999990;
+        box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.2);
+    }
+    &.virtual.focus {
+        box-shadow: 0px 5px 30px rgba(0, 0, 0, 0.5);
+    }
+    &.windowed {
+        position: static;
+        [name=header] {
+            display: none;
+        }
+        [name=controls] {
+            display: none;
+        }
+    }
+    &.minimized {
+        position: fixed;
+        top: auto !important;
+        bottom: 0px !important;
+        width: 200px !important;
+        height: auto !important;
+        [name=popout],
+        [name=maximize],
+        [name=close] {
+            display: none;
+        }
+        [name=body],
+        [name=footer] {
+            display: none;
+        }
+    }
+    &.maximized {
+        position: fixed;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: auto !important;
+        height: auto !important;
+        [name=popout],
+        [name=maximize],
+        [name=close] {
+            // display: none;
+        }
+        [name=body] {
+            overflow: auto;
+        }
+    }
+    [name=header] {
+        display: flex;
+        background: rgb(46, 75, 89);
+        color: black;
+        cursor: move;
+        height: 22px;
+        opacity: 0.5;
+    }
+    &.focus [name=header] {
+        opacity: 1;
+    }
+    [name=title] {
+        color: white;
+        font-weight: bold;
+        text-align: center;
+        flex-grow: 1;
+        line-height: 22px;
+        margin: 0 10px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    [name=controls] {
+        // float: right;
+        button {
+            width: 21px;
+            height: 21px;
+        }
+    }
+    [name=grab] {
+        cursor: nwse-resize;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 16px;
+        height: 16px;
+        line-height: 16px;
+        text-align: center;
+        &:after {
+            position: abosolute;
+            display: block;
+            transform: rotate(-45deg);
+            content: "...";
+        }
+    }
+    [name=body] {
+        position: relative;
+        flex-grow: 1;
+        display: flex;
+    }
+    &.drag {
+        will-change: top, left, width, height;
+    }
+    &.focus {
+        //outline: 2px dotted red;
+    }
+}
