@@ -29,20 +29,25 @@ class VtWindow {
             return div;
         })();
 
-        const find = (selector) => {
+        /**
+         * @function $
+         * @param  {type} selector {description}
+         * @return {type} {description}
+         */
+        const $ = (selector) => {
             return this.el.querySelector(selector);
         };
 
         this.DOM = {
-            header: find('[name=header]'),
-            title: find('[name=title]'),
-            controls: find('[name=controls]'),
-            body: find('[name=body]'),
-            close: find('[name=close]'),
-            popout: find('[name=popout]'),
-            minimize: find('[name=minimize]'),
-            maximize: find('[name=maximize]'),
-            resize: find('[name=grab]'),
+            header: $('[name=header]'),
+            title: $('[name=title]'),
+            controls: $('[name=controls]'),
+            body: $('[name=body]'),
+            close: $('[name=close]'),
+            popout: $('[name=popout]'),
+            minimize: $('[name=minimize]'),
+            maximize: $('[name=maximize]'),
+            resize: $('[name=grab]'),
         };
 
         //bind events
