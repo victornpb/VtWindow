@@ -12,6 +12,8 @@ class VtWindow {
         this.options = {
             preserveFocusOrder: true, //preserve window order after focusing (disable if you need to use iframes inside windows)
             autoMount: false, //mount on new
+
+            ...options
         };
 
 
@@ -108,10 +110,11 @@ class VtWindow {
         //init drag n drop
         this._drag = new Drag(this.DOM.header, this.el);
         this._resize = new Drag(this.DOM.resize, this.el, true);
+        
 
         this.blur();
 
-        if(options.autoMount) this.mount();
+        if(this.options.autoMount) this.mount();
     }
     mount(parentEl) {
         const parent = (parentEl || document.body);
@@ -283,55 +286,96 @@ class VtWindow {
 
 
 class Drag {
-    constructor(zone, target, r) {
-        const that = this;
+    /**
+     * Make a element draggable/resizable
+     * @param {Element} zone The element that will listen to events (handdle/grabber)
+     * @param {Element} target The element that will be dragged/resized
+     * @param {boolean} [resizeMode=false] Drag or Resize mode (dafault is move/drag)
+     * 
+     * @memberOf Drag
+     */
+    constructor(zone, target, resizeMode=false) {
+        
         this.zone = zone;
         this.target = target;
 
         let offX, offY, tW, tH;
 
         function dragStartHandler(e) {
-            console.log('onmousedown');
+            if(e.buttons===1){
+                console.log('onmousedown');
 
-            offX = e.offsetX;
-            offY = e.offsetY;
+                offX = e.offsetX;
+                offY = e.offsetY;
 
-            document.addEventListener('mousemove', dragMoveHandler);
-            document.addEventListener('mouseup', dragEndHandler);
+                document.addEventListener('mousemove', this._dragMoveHandler);
+                document.addEventListener('mouseup', this._dragEndHandler);
 
-            that.target.classList.add('drag');
+                this.target.classList.add('drag');
+            }
         }
-        this.zone.addEventListener('mousedown', dragStartHandler);
-
+        
         function dragMoveHandler(e) {
             e.preventDefault();
-            console.log('mouseMoveHandler' /* `clientX=${e.clientX} layerX=${e.layerX} offsetX=${e.offsetX} pageX=${e.pageX} screenX=${e.screenX}`, e.target */);
+            console.log('mouseMoveHandler', e /* `clientX=${e.clientX} layerX=${e.layerX} offsetX=${e.offsetX} pageX=${e.pageX} screenX=${e.screenX}`, e.target */);
+            
+            // If the button is not down, dispatch a "fake" mouse up event, to stop listening to mousemove
+            // This happens when the mouseup is not captured (outside the browser)
+            if(e.buttons!==1 || e.which!==1) {
+                console.log('artificial dragEnd!');
+                this._dragEndHandler();
+                return;
+            }
 
-            if (r) {
+            if (resizeMode) {
                 let h = e.clientY - target.offsetTop - offY + zone.clientHeight;
                 let w = e.clientX - target.offsetLeft - offX + zone.clientWidth;
                 // console.log(w, h, `clientX=${target.clientX} layerX=${target.layerX} offsetX=${target.offsetX} pageX=${target.pageX} screenX=${target.screenX} offsetLeft=${target.offsetLeft} scrollLeft=${target.scrollLeft}`);
-
-                that.target.style.height = `${h}px`;
-                that.target.style.width = `${w}px`;
+                
+                this.target.style.height = `${h}px`;
+                this.target.style.width = `${w}px`;
             } else {
                 let t = e.clientY - offY < 0 ? 0 : e.clientY - offY;
                 let l = e.clientX - offX < 0 ? 0 : e.clientX - offX;
-                that.target.style.top = `${t}px`;
-                that.target.style.left = `${l}px`;
+                this.target.style.top = `${t}px`;
+                this.target.style.left = `${l}px`;
             }
         }
-
+        
         function dragEndHandler(e) {
             console.log('mouseUpHandler');
-            document.removeEventListener('mousemove', dragMoveHandler);
-            document.removeEventListener('mouseup', dragEndHandler);
-            that.target.classList.remove('drag');
+            document.removeEventListener('mousemove', this._dragMoveHandler);
+            document.removeEventListener('mouseup', this._dragEndHandler);
+            this.target.classList.remove('drag');
         }
-    }
-    enable() {
 
+        // We need to bind the handlers to this instance and expose them to methods enable and destroy
+        this._dragStartHandler = dragStartHandler.bind(this);
+        this._dragMoveHandler = dragMoveHandler.bind(this);
+        this._dragEndHandler = dragEndHandler.bind(this);
+        
+        this.enable();
+    }
+
+    /**
+     * Turn on the drag and drop of the instancea
+     * @memberOf Drag
+     */
+    enable() {
+        this.zone.addEventListener('mousedown', this._dragStartHandler);
+    }
+
+    /**
+     * Teardown all events bound to the document and elements
+     * You can resurrect this instance by calling enable()
+     * @memberOf Drag
+     */
+    destroy(){
+        this.target.classList.remove('drag');
+        this.zone.removeEventListener('mousedown', this._dragStartHandler);
+        document.removeEventListener('mousemove', this._dragMoveHandler);
+        document.removeEventListener('mouseup', this._dragEndHandler);
     }
 }
 
-export default VtWindow;
+// export default VtWindow;
