@@ -6,12 +6,19 @@
 class VtWindow {
     constructor(content, options) {
         
+        this.options = {
+            preserveFocusOrder: true, //preserve window order after focusing (disable if you need to use iframes inside windows)
+        };
+
+
         // private props
         this._id = `instance-${Math.random()}`; //TODO: remove the need for ID or implement propper ID generation
         this._parent = undefined;
         this._mounted = false;
         this._maximized = false;
         this._minimized = false;
+
+        
         this.el = (()=>{
             const div = document.createElement('div');
             div.innerHTML = `
@@ -63,24 +70,28 @@ class VtWindow {
         this.DOM.maximize.onclick = this.maximize.bind(this);
         this.DOM.title.ondblclick = this.maximize.bind(this);
 
+        
+        this._focused = false;
 
-            if (this.focused === false && this.isMounted) { //bring to front, move down into body
-                this.unmount();
-                this.mount();
-
-                const blur = (e) => {
-                    if (!this.el.contains(e.target)) {
-                        this.blur();
-                        document.addEventListener('mousedown', blur)
-                    }
-                }
-                document.addEventListener('mousedown', blur);
-
+        //auto focus on click
+       function focusHandler(e) {
+            if (this._focused === false && this._mounted === true) { //fired only when switching states
                 this.focus();
             }
-        });
+        };
+        this._focusHandler = focusHandler.bind(this);
 
-        //init
+
+        // handler registed when the window gain focus, so it can auto blur when clicking outside window
+        function globalBlurHandler(e) {
+            if (!this.el.contains(e.target)) { // click outside el
+                this.blur(); 
+            }
+        };
+        this._blurHandler = globalBlurHandler.bind(this);
+
+
+        
         this.el.classList.add('vt-window');
         this.el.style.cssText = `
             top: 20px;
@@ -94,6 +105,7 @@ class VtWindow {
         this._drag = new Drag(this.DOM.header, this.el);
         this._resize = new Drag(this.DOM.resize, this.el, true);
 
+        this.blur();
 
     }
     mount(parentEl) {
@@ -191,15 +203,31 @@ class VtWindow {
     }
 
     focus() {
-        this.focused = true;
         this.el.classList.add('focus');
+        this._focused = true;
+
+        //bring to front, move down into body
+        if(this.options.preserveFocusOrder) {
+            //it will force iframes to reload on focus
+            this.unmount();
+            this.mount();
+        }
+
+        // this.el.style.zIndex = 1;
+
+        this.el.removeEventListener('mousedown', this._focusHandler);
+        document.addEventListener('mousedown', this._blurHandler);
     }
+
     blur() {
-        this.focused = false;
         this.el.classList.remove('focus');
+        this._focused = false;
+
+        // this.el.style.zIndex = 0;
+
+        document.removeEventListener('mousedown', this._blurHandler);
+        this.el.addEventListener('mousedown', this._focusHandler);
     }
-
-
 
     set closable(v) {
         this.DOM.close.style.display = v ? '' : 'none';
