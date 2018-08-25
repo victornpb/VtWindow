@@ -1,3 +1,6 @@
+
+
+
 /**
  * A Virtual windows system for the browser written in vanilla js
  * @see https://github.com/victornpb/VtWindow
@@ -8,6 +11,7 @@ class VtWindow {
         
         this.options = {
             preserveFocusOrder: true, //preserve window order after focusing (disable if you need to use iframes inside windows)
+            autoMount: false, //mount on new
         };
 
 
@@ -107,6 +111,7 @@ class VtWindow {
 
         this.blur();
 
+        if(options.autoMount) this.mount();
     }
     mount(parentEl) {
         const parent = (parentEl || document.body);
