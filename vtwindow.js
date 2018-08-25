@@ -247,18 +247,36 @@ class VtWindow {
     set deatachable(v) {
         this.DOM.popout.style.display = v ? '' : 'none';
     }
-
-    set top(v) {
-        this.el.style.top = `${v}px`;
+    
+   
+    /**
+     * Position from the top in pixels
+     * @type {Number}
+     */
+    set top(px) {
+        this.el.style.top = `${px}px`;
     }
-    set left(v) {
-        this.el.style.left = `${v}px`;
+    /**
+     * Position from the left in pixels
+     * @type {Number}
+     */
+    set left(px) {
+        this.el.style.left = `${px}px`;
     }
-    set width(v) {
-        this.el.style.width = `${v}px`;
+    /**
+     * Width in pixels
+     * @type {Number}
+     */
+    set width(px) {
+        this.el.style.width = `${px}px`;
     }
-    set height(v) {
-        this.el.style.height = `${v}px`;
+    /**
+     * Height in pixels
+     * @type {Number}
+     * @property {Number} iujiuji
+     */
+    set height(px) {
+        this.el.style.height = `${px}px`;
     }
 }
 
