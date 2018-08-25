@@ -290,19 +290,20 @@ class Drag {
 
         let offX, offY, tW, tH;
 
-        this.zone.addEventListener('mousedown', (e) => {
+        function dragStartHandler(e) {
             console.log('onmousedown');
 
             offX = e.offsetX;
             offY = e.offsetY;
 
-            document.addEventListener('mousemove', mouseMoveHandler);
-            document.addEventListener('mouseup', mouseUpHandler);
+            document.addEventListener('mousemove', dragMoveHandler);
+            document.addEventListener('mouseup', dragEndHandler);
 
-            this.target.classList.add('drag');
-        });
+            that.target.classList.add('drag');
+        }
+        this.zone.addEventListener('mousedown', dragStartHandler);
 
-        function mouseMoveHandler(e) {
+        function dragMoveHandler(e) {
             e.preventDefault();
             console.log('mouseMoveHandler' /* `clientX=${e.clientX} layerX=${e.layerX} offsetX=${e.offsetX} pageX=${e.pageX} screenX=${e.screenX}`, e.target */);
 
@@ -321,10 +322,10 @@ class Drag {
             }
         }
 
-        function mouseUpHandler(e) {
+        function dragEndHandler(e) {
             console.log('mouseUpHandler');
-            document.removeEventListener('mousemove', mouseMoveHandler);
-            document.removeEventListener('mouseup', mouseUpHandler);
+            document.removeEventListener('mousemove', dragMoveHandler);
+            document.removeEventListener('mouseup', dragEndHandler);
             that.target.classList.remove('drag');
         }
     }
