@@ -6,6 +6,8 @@
 class VtWindow {
     constructor(content, options) {
         
+        // private props
+        this._id = `instance-${Math.random()}`; //TODO: remove the need for ID or implement propper ID generation
         this._parent = undefined;
         this._mounted = false;
         this._maximized = false;
@@ -141,7 +143,7 @@ class VtWindow {
         var s = `width=${this.el.offsetWidth}, height=${this.el.clientHeight}, top=${this.el.offsetTop + wTop}, left=${this.el.offsetLeft + wLeft}`;
         // console.log(s);
 
-        this.popup = window.open('', this.id, s);
+        this.popup = window.open('', this._id, s);
 
         // this.isMounted = false;
         this.unmount();
