@@ -6,6 +6,8 @@
 class VtWindow {
     constructor(content, options) {
         
+        this._maximized = false;
+        this._minimized = false;
         this.el = (()=>{
             const div = document.createElement('div');
             div.innerHTML = `
@@ -103,17 +105,23 @@ class VtWindow {
         this.el.style.display = 'none';
     }
     minimize() {
-        if (this.maximized) {
+        if (this._maximized) {
             this.maximize(false); //restore
         }
-        this.minimized = !this.minimized;
-        this.el.classList.toggle('minimized', this.minimized);
+        this.el.classList.toggle('minimized', this._minimized);
+        this._minimized = !this._minimized;
+    }
+    get isMinimized(){
+        return this._minimized;
     }
     maximize() {
-        this.maximized = !this.maximized;
-        this.el.classList.toggle('maximized', this.maximized);
+        this._maximized = !this._maximized;
+        this.el.classList.toggle('maximized', this._maximized);
         // this.el.style.top = '0';
         // this.el.style.left = '0';
+    }
+    get isMaximized(){
+        return this._maximized;
     }
     popout() {
         //aproximate the view port is in the center of the window
