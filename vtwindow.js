@@ -12,6 +12,7 @@ class VtWindow {
         this.options = {
             preserveFocusOrder: true, //preserve window order after focusing (disable if you need to use iframes inside windows)
             autoMount: false, //mount on new
+            lowEnd: false,
 
             ...options
         };
@@ -106,11 +107,13 @@ class VtWindow {
             height: 300px;
         `;
 
+        if(this.options.lowEnd) this.el.classList.add('low-end');
+
         
         //init drag n drop
         this._drag = new Drag(this.DOM.header, this.el);
         this._resize = new Drag(this.DOM.resize, this.el, true);
-        
+
 
         this.blur();
 
@@ -317,12 +320,12 @@ class Drag {
         
         function dragMoveHandler(e) {
             e.preventDefault();
-            console.log('mouseMoveHandler', e /* `clientX=${e.clientX} layerX=${e.layerX} offsetX=${e.offsetX} pageX=${e.pageX} screenX=${e.screenX}`, e.target */);
+            // console.log('mouseMoveHandler', e /* `clientX=${e.clientX} layerX=${e.layerX} offsetX=${e.offsetX} pageX=${e.pageX} screenX=${e.screenX}`, e.target */);
             
             // If the button is not down, dispatch a "fake" mouse up event, to stop listening to mousemove
             // This happens when the mouseup is not captured (outside the browser)
             if(e.buttons!==1 || e.which!==1) {
-                console.log('artificial dragEnd!');
+                // console.log('artificial dragEnd!');
                 this._dragEndHandler();
                 return;
             }

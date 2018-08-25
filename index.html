@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="vtwindow.css">
+    <script src="vtwindow.js"></script>
+</head>
+<body>
+    <script>
+        
+        var w1 = new VtWindow();
+        w1.mount();
+
+        var w2 = new VtWindow();
+        w2.mount();
+        w2.setTitle('Hahahaha');
+        w2.setBody('FOO BAR');
+        w2.top = 100;
+        w2.left = 100;
+        w2.width = 250;
+        w2.height = 200;
+
+        var w3 = new VtWindow(null, {preserveFocusOrder:false, lowEnd: true});
+        w3.mount();
+
+
+        // var w3 = new VtWindow(null, {preserveFocusOrder:false});
+        // w3.mount();
+        // w3.setTitle('MyWindow');
+        // w3.setBody(`<iframe width="100%" height="100%" src="https://www.youtube.com/embed/gnKt_QHehZc" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="position:absolute;"></iframe>`);
+        // w3.top = 200;
+        // w3.left = 200;
+        // w3.width = 250;
+        // w3.height = 200;
+
+        
+
+    </script>
+</body>
+</html>
