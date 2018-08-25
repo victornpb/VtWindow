@@ -190,22 +190,25 @@ class VtWindow {
 
     setTitle(elm) {
         if (typeof elm === 'string') {
-            let div = document.createElement('div');
-            div.innerHTML = elm;
-            elm = div;
+            this.DOM.title.innerHTML = elm;
         }
-        this.DOM.title.innerHTML = '';
-        this.DOM.title.appendChild(elm);
+        else{
+            this.DOM.title.innerHTML = '';
+            this.DOM.title.appendChild(elm);
+        }
     }
-
+    
+    /**
+     * @param  {} elm
+     */
     setBody(elm) {
         if (typeof elm === 'string') {
-            let div = document.createElement('div');
-            div.innerHTML = elm;
-            elm = div;
+            this.DOM.body.innerHTML = elm;
         }
-        this.DOM.body.innerHTML = '';
-        this.DOM.body.appendChild(elm);
+        else {
+            this.DOM.body.innerHTML = '';
+            this.DOM.body.appendChild(elm);
+        }
     }
 
     focus() {
