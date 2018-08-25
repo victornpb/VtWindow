@@ -6,6 +6,8 @@
 class VtWindow {
     constructor(content, options) {
         
+        this._parent = undefined;
+        this._mounted = false;
         this._maximized = false;
         this._minimized = false;
         this.el = (()=>{
@@ -89,14 +91,22 @@ class VtWindow {
 
 
     }
-    mount() {
-        this.isMounted = true;
-        document.body.appendChild(this.el);
+    mount(parentEl) {
+        const parent = (parentEl || document.body);
+        parent.appendChild(this.el);
         this.el.classList.add('virtual');
+        // modify props only after the append was successful
+        this._parent = parent;
+        this._mounted = true;
     }
     unmount() {
-        this.isMounted = false;
-        document.body.removeChild(this.el);
+        this._parent.removeChild(this.el);
+        // modify props only after the append was successful
+        this._mounted = false;
+        // should we clear _parent after unmount? NO! (will break focus, bring to front)
+    }
+    get isMounted(){
+        return this._mounted; //TODO: verify if this.el is inside this._parent
     }
     show() {
         this.el.style.display = '';
