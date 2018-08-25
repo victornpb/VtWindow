@@ -51,25 +51,12 @@ class VtWindow {
         };
 
         //bind events
-        this.DOM.close.onclick = () => {
-            this.hide();
-        };
-        this.DOM.popout.onclick = () => {
-            this.popout();
-        };
-        this.DOM.minimize.onclick = () => {
-            this.minimize();
-        };
-        this.DOM.maximize.onclick = () => {
-            this.maximize();
-        };
-        this.DOM.title.ondblclick = () => {
-            this.maximize();
-        };
+        this.DOM.close.onclick = this.hide.bind(this)
+        this.DOM.popout.onclick = this.popout.bind(this);
+        this.DOM.minimize.onclick = this.minimize.bind(this);
+        this.DOM.maximize.onclick = this.maximize.bind(this);
+        this.DOM.title.ondblclick = this.maximize.bind(this);
 
-        //fake focus, bring to front
-        this.focused = false;
-        this.el.addEventListener('mousedown', () => {
 
             if (this.focused === false && this.isMounted) { //bring to front, move down into body
                 this.unmount();
