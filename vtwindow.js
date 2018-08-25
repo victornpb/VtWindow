@@ -156,21 +156,21 @@ class VtWindow {
         return this._maximized;
     }
     popout() {
-        //aproximate the view port is in the center of the window
-        var wTop = ((window.outerHeight - window.innerHeight) / 2) + window.screenY;
-        var wLeft = ((window.outerWidth - window.innerWidth) / 2) + window.screenX;
+        //aproximate the view port is in the center of the browser
+        const wTop = ((window.outerHeight - window.innerHeight) / 2) + window.screenY;
+        const wLeft = ((window.outerWidth - window.innerWidth) / 2) + window.screenX;
 
-        var s = `width=${this.el.offsetWidth}, height=${this.el.clientHeight}, top=${this.el.offsetTop + wTop}, left=${this.el.offsetLeft + wLeft}`;
+        const s = `width=${this.el.offsetWidth}, height=${this.el.clientHeight}, top=${this.el.offsetTop + wTop}, left=${this.el.offsetLeft + wLeft}`;
         // console.log(s);
 
         this.popup = window.open('', this._id, s);
 
-        // this.isMounted = false;
+        // this._mounted = false;
         this.unmount();
         this.popup.document.body.appendChild(this.el);
         this.popup.document.title = this.DOM.title.innerText;
 
-        var popupHead = this.popup.document.getElementsByTagName('head')[0];
+        const popupHead = this.popup.document.getElementsByTagName('head')[0];
         document.querySelectorAll('style,link').forEach((el) => {
             popupHead.appendChild(el.cloneNode(true));
         });
@@ -182,6 +182,7 @@ class VtWindow {
             this.exitpopout();
         };
     }
+
     exitpopout() {
         this.el.classList.remove('windowed');
         this.mount();
@@ -266,8 +267,7 @@ class Drag {
         this.zone = zone;
         this.target = target;
 
-        var offX, offY, tW, tH;
-
+        let offX, offY, tW, tH;
 
         this.zone.addEventListener('mousedown', (e) => {
             console.log('onmousedown');
