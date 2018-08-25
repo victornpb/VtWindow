@@ -4,6 +4,8 @@
  * @author Victor N. wwww.victorborges.com
  */
 class VtWindow {
+    constructor(content, options) {
+        
         this.el = (()=>{
             const div = document.createElement('div');
             div.innerHTML = `
