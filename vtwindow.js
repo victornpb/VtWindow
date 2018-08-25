@@ -83,8 +83,10 @@ class VtWindow {
         //init
         this.el.classList.add('vt-window');
         this.el.style.cssText = `
-            top: 0px;
-            left: 0px;
+            top: 20px;
+            left: 20px;
+            width: 400px;
+            height: 300px;
         `;
 
         
