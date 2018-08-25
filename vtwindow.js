@@ -87,9 +87,10 @@ class VtWindow {
             left: 0px;
         `;
 
-        this.drag = new Drag(this.DOM.header, this.el);
-        this.resize = new Drag(this.DOM.resize, this.el, true);
-
+        
+        //init drag n drop
+        this._drag = new Drag(this.DOM.header, this.el);
+        this._resize = new Drag(this.DOM.resize, this.el, true);
 
 
     }
