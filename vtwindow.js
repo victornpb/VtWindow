@@ -4,12 +4,11 @@
  * @author Victor N. wwww.victorborges.com
  */
 class VtWindow {
-    constructor(title, body, options) {
-        this.id = `instance-${unique++}`;
-        this.el = document.createElement('div');
-        this.el.innerHTML = `
-        	<div name="header">
-            	<span name="title">This is my dope window</span>
+        this.el = (()=>{
+            const div = document.createElement('div');
+            div.innerHTML = `
+            <div name="header">
+                <span name="title">This is my dope window</span>
                 <span name="controls">
                     <button name="popout">^</button>
                     <button name="maximize">+</button>
@@ -22,9 +21,11 @@ class VtWindow {
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
                 </div>
             <div name="footer">
-            	<div name="grab"></div>
+                <div name="grab"></div>
             </div>
-        `;
+            `;
+            return div;
+        })();
 
         const find = (selector) => {
             return this.el.querySelector(selector);
