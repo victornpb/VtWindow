@@ -322,10 +322,10 @@ class Drag {
     this._targetElm = targetElm;
     this._handleElm = handleElm;
 
-    const move = (x, y) => {
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
+    let vw = window.innerWidth;
+    let vh = window.innerHeight;
       
+    const move = (x, y) => {
       let l = x - offLeft;
       if (x - offLeft < 0) l = 0;
       if (x - offRight > vw) l = vw - this._targetElm.clientWidth;
@@ -338,9 +338,6 @@ class Drag {
     };
 
     const resize = (x, y) => {
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
-
       let w = x - this._targetElm.offsetLeft - offRight;
       if (x - offRight > vw) w = vw - this._targetElm.offsetLeft;
       let h = y - this._targetElm.offsetTop - offBottom;                                                                                                                                                        
@@ -370,6 +367,9 @@ class Drag {
         //offset from the click to the bottom-right corner of the target (resize)
         offBottom = y - (targetOffset.y + targetOffset.height);
         offRight = x - (targetOffset.x + targetOffset.width);
+
+        vw = window.innerWidth;
+        vh = window.innerHeight;
 
         //mouse events
         document.addEventListener('mousemove', this._dragMoveHandler);
