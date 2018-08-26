@@ -13,56 +13,79 @@ class VtWindow {
    * @param  {string|Element} [content.body] Content of the window
    * 
    * @param  {object} [options] Object with options
+   * 
+   * @param  {number} [options.top=10] Initial top position
+   * @param  {number} [options.left=10] Initial left position
+   * @param  {number} [options.width=400] Initial width
+   * @param  {number} [options.height=300] Initial height
+   * 
+   * @param {boolean} [closable=true] Show close button
+   * @param {boolean} [maximizable=true] Show maximize button
+   * @param {boolean} [minimizable=true] Show minimize button
+   * @param {boolean} [deatachable=true] Show deatache button
+   * @param {boolean} [resizable=true] Show resize button
+   * 
    * @param  {boolean} [options.preserveFocusOrder=true] Preserve window order after focusing (disable if you need to use iframes inside windows)
    * @param  {boolean} [options.autoMount=false] Automatically call mount() after instantiation
    * @param  {boolean} [options.lowEnd=false] Turn on optimazations for low end devices
    * 
+   * @param  {function} [options.onMinimize] Callback on Minimize
+   * @param  {function} [options.onMaximize] Callback on Maximize
+   * @param  {function} [options.onMount] Callback on Mount
+   * @param  {function} [options.onUnmount] Callback on Unmount
+   * @param  {function} [options.onShow] Callback on Show
+   * @param  {function} [options.onHide] Callback on Hide
+   * @param  {function} [options.onPopout] Callback on Popout
+   * @param  {function} [options.onExitPopout] Callback on ExitPopout
+   * @param  {function} [options.onFocus] Callback on Focus
+   * @param  {function} [options.onBlur] Callback on Blur
+   * 
    * @param  {Element} [options.container=document.body] Where the window should be mounted to (cannot be changed after instantiation)
    * @param  {string} [options.template] Template used to construct the window
-   * 
-   * @param  {function} [options.onMinimize] Callback
-   * @param  {function} [options.onMaximize] Callback
-   * @param  {function} [options.onMount] Callback
-   * @param  {function} [options.onUnmount] Callback
-   * @param  {function} [options.onShow] Callback
-   * @param  {function} [options.onHide] Callback
-   * @param  {function} [options.onPopout] Callback
-   * @param  {function} [options.onExitPopout] Callback
-   * @param  {function} [options.onFocus] Callback
-   * @param  {function} [options.onBlur] Callback
    * 
    * @return {VtWindow} A VtWindow instance
    */  
   constructor(content, options) {
 
     content = {
-      title: 'Untitled',
-      body: '<!-- Empty -->',
+      title: 'VtWindow',
+      body: '<h1>VtWindow</h1>',
       ...content,
     };
     
     this.options = {
+
+      top: 10,
+      left: 10,
+      width: 400,
+      height: 300,
+
+      closable: true,
+      maximizable: true,
+      minimizable: true,
+      deatachable: true,
+      resizable: true,
+
       preserveFocusOrder: true, //preserve window order after focusing (disable if you need to use iframes inside windows)
       autoMount: false, //mount on new
       lowEnd: false,
 
+      onMinimize: null,
+      onMaximize: null,
+      onMount: null,
+      onUnmount: null,
+      onShow: null,
+      onHide: null,
+      onPopout: null,
+      onExitPopout: null,
+      onFocus: null,
+      onBlur: null,
+      
       container: document.body,
-
-      onMinimize: noop,
-      onMaximize: noop,
-      onMount: noop,
-      onUnmount: noop,
-      onShow: noop,
-      onHide: noop,
-      onPopout: noop,
-      onExitPopout: noop,
-      onFocus: noop,
-      onBlur: noop,
-
       template: /*html*/`
-      <div role="dialog" aria-label="${content.title}">
+      <div role="dialog" aria-label="">
         <div name="header">
-          <span name="title">${content.title}</span>
+          <span name="title"><!-- title --></span>
           <span name="controls">
             <button name="popout">^</button>
             <button name="maximize">+</button>
@@ -71,7 +94,7 @@ class VtWindow {
           </span>
         </div>
         <div name="body">
-          ${content.body}
+          <!-- body -->
         </div>
         <div name="footer">
           <div name="grab"></div>
@@ -138,7 +161,6 @@ class VtWindow {
     this.DOM.maximize.onclick = this.maximize.bind(this);
     this.DOM.title.ondblclick = this.maximize.bind(this);
 
-
     /**
      * handler responsible for auto focusing when you click inside a window
      * @listens mousedown
@@ -165,17 +187,6 @@ class VtWindow {
     /** @private */
     this._blurHandler = globalBlurHandler;
 
-    this.el.classList.add('vt-window');
-    this.el.style.cssText = `
-            top: 20px;
-            left: 20px;
-            width: 400px;
-            height: 300px;
-        `;
-
-    if (this.options.lowEnd) this.el.classList.add('low-end');
-
-    
     /** 
      * Drag move instance
      * @private
@@ -188,7 +199,24 @@ class VtWindow {
      */
     this._dragResize = new Drag(this.el, this.DOM.resize, { mode: 'resize' });
 
-    this.blur(); //start on blurred state so the reciprocical blur/focus events starts
+    this.blur(); //start on blurred state so the reciprocical blur/focus events starts 
+    
+    this.el.classList.add('vt-window');
+    if (this.options.lowEnd) this.el.classList.add('low-end');
+    
+    // setup options
+    this.top = this.options.top;
+    this.left = this.options.left;
+    this.width = this.options.width;
+    this.height = this.options.height;
+    this.closeable = this.options.closeable;
+    this.minimizable = this.options.minimizable;
+    this.maximizable = this.options.maximizable;
+    this.deatachable = this.options.deatachable;
+    this.resizeable = this.options.resizeable;
+    
+    this.setTitle(content.title);
+    this.setBody(content.body);
 
     if (this.options.autoMount) this.mount();
   }
