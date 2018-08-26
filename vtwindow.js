@@ -503,23 +503,27 @@ class Drag {
       if (y - offTop < 0) t = 0; //offscreen /\
       else if (y - offBottom > vh) t = vh - this._targetElm.clientHeight; //offscreen \/
       
-      if(this.xAxis) this._targetElm.style.left = `${l}px`;
-      if(this.yAxis) this._targetElm.style.top = `${t}px`;
+      if(this.xAxis)
+        this._targetElm.style.left = `${l}px`;
+      if(this.yAxis)
+        this._targetElm.style.top = `${t}px`;
       // this._targetElm.style.transform = `translate(${l}px, ${t}px)`; // profilling wasn't faster than top/left as expected
     };
 
     const resize = (x, y) => {
       let w = x - this._targetElm.offsetLeft - offRight;
-      if (x - offRight > vw) w = Math.min(vw - this._targetElm.offsetLeft, this.options.maxWidth); //offscreen ->
-      else if (x - offRight - this._targetElm.offsetLeft > this.options.maxWidth) w = this.options.maxWidth; //max width
-      else if (x - offRight - this._targetElm.offsetLeft < this.options.minWidth) w = this.options.minWidth; //min width
+      if (x - offRight > vw) w = Math.min(vw - this._targetElm.offsetLeft, this.maxWidth); //offscreen ->
+      else if (x - offRight - this._targetElm.offsetLeft > this.maxWidth) w = this.maxWidth; //max width
+      else if (x - offRight - this._targetElm.offsetLeft < this.minWidth) w = this.minWidth; //min width
       let h = y - this._targetElm.offsetTop - offBottom;       
-      if (y - offBottom > vh) h = Math.min(vh - this._targetElm.offsetTop, this.options.maxHeight); //offscreen \/
-      else if (y - offBottom - this._targetElm.offsetTop > this.options.maxHeight) h = this.options.maxHeight; //max height
-      else if (y- offBottom - this._targetElm.offsetTop < this.options.minHeight) h = this.options.minHeight; //min height
+      if (y - offBottom > vh) h = Math.min(vh - this._targetElm.offsetTop, this.maxHeight); //offscreen \/
+      else if (y - offBottom - this._targetElm.offsetTop > this.maxHeight) h = this.maxHeight; //max height
+      else if (y- offBottom - this._targetElm.offsetTop < this.minHeight) h = this.minHeight; //min height
 
-      if(this.xAxis) this._targetElm.style.width = `${w}px`;
-      if(this.yAxis) this._targetElm.style.height = `${h}px`;
+      if(this.xAxis)
+        this._targetElm.style.width = `${w}px`;
+      if(this.yAxis)
+        this._targetElm.style.height = `${h}px`;
     };
 
      // define which operation is performed on drag
@@ -566,18 +570,25 @@ class Drag {
 
     function dragMoveHandler(e) {
       e.preventDefault();
+      let x, y;
 
       const touch = e.type === 'touchmove';
+      if (touch) {
+        const t = e.touches[0];
+        x = t.clientX;
+        y = t.clientY;
+      } else { //mouse
 
-      // If the button is not down, dispatch a "fake" mouse up event, to stop listening to mousemove
-      // This happens when the mouseup is not captured (outside the browser)
-      if (!touch && e.buttons !== 1) {
-        this._dragEndHandler();
-        return;
+        // If the button is not down, dispatch a "fake" mouse up event, to stop listening to mousemove
+        // This happens when the mouseup is not captured (outside the browser)
+        if (e.buttons !== 1) {
+          this._dragEndHandler();
+          return;
+        }
+        
+        x = e.clientX;
+        y = e.clientY;
       }
-
-      const y = touch ? e.touches[0].clientY : e.clientY;
-      const x = touch ? e.touches[0].clientX : e.clientX;
 
       operation(x, y);
     }
