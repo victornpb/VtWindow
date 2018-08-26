@@ -469,14 +469,30 @@ class Drag {
   constructor(targetElm, handleElm, options) {
     this.options = {
       mode: 'move',
+    
       minWidth: 200,
       maxWidth: Infinity,
       minHeight: 100,
       maxHeight: Infinity,
+      xAxis: true,
+      yAxis: true,
+
+      draggingClass: 'drag',
+      
       ...options,
     };
 
+    this.minWidth = this.options.minWidth;
+    this.maxWidth = this.options.maxWidth;
+    this.minHeight = this.options.minHeight;
+    this.maxHeight = this.options.maxHeight;
+    this.xAxis = this.options.xAxis;
+    this.yAxis = this.options.yAxis;
+    this.draggingClass = this.options.draggingClass;
+
+    /** @private */
     this._targetElm = targetElm;
+    /** @private */
     this._handleElm = handleElm;
 
     const move = (x, y) => {
@@ -487,8 +503,8 @@ class Drag {
       if (y - offTop < 0) t = 0; //offscreen /\
       else if (y - offBottom > vh) t = vh - this._targetElm.clientHeight; //offscreen \/
       
-      this._targetElm.style.top = `${t}px`;
-      this._targetElm.style.left = `${l}px`;
+      if(this.xAxis) this._targetElm.style.left = `${l}px`;
+      if(this.yAxis) this._targetElm.style.top = `${t}px`;
       // this._targetElm.style.transform = `translate(${l}px, ${t}px)`; // profilling wasn't faster than top/left as expected
     };
 
@@ -502,8 +518,8 @@ class Drag {
       else if (y - offBottom - this._targetElm.offsetTop > this.options.maxHeight) h = this.options.maxHeight; //max height
       else if (y- offBottom - this._targetElm.offsetTop < this.options.minHeight) h = this.options.minHeight; //min height
 
-      this._targetElm.style.width = `${w}px`;
-      this._targetElm.style.height = `${h}px`;
+      if(this.xAxis) this._targetElm.style.width = `${w}px`;
+      if(this.yAxis) this._targetElm.style.height = `${h}px`;
     };
 
      // define which operation is performed on drag
@@ -544,7 +560,7 @@ class Drag {
         });
         document.addEventListener('touchend', this._dragEndHandler);
 
-        this._targetElm.classList.add('drag');
+        this._targetElm.classList.add(this.draggingClass);
       }
     }
 
@@ -574,12 +590,15 @@ class Drag {
       document.removeEventListener('touchmove', this._dragMoveHandler);
       document.removeEventListener('touchend', this._dragEndHandler);
 
-      this._targetElm.classList.remove('drag');
+      this._targetElm.classList.remove(this.draggingClass);
     }
 
     // We need to bind the handlers to this instance and expose them to methods enable and destroy
+    /** @private */
     this._dragStartHandler = dragStartHandler.bind(this);
+    /** @private */
     this._dragMoveHandler = dragMoveHandler.bind(this);
+    /** @private */
     this._dragEndHandler = dragEndHandler.bind(this);
 
     this.enable();
@@ -600,7 +619,7 @@ class Drag {
    * @memberOf Drag
    */
   destroy() {
-    this.target.classList.remove('drag');
+    this.target.classList.remove(this.draggingClass);
 
     //mouse events
     this._handleElm.removeEventListener('mousedown', this._dragStartHandler);
