@@ -329,15 +329,6 @@ class Drag {
     this._targetElm = targetElm;
     this._handleElm = handleElm;
 
-    // define which operation is performed on drag
-    const operation = this.options.mode === 'move' ? move : resize;
-
-    // offset from the initial click to the target boundaries
-    let offTop, offLeft, offBottom, offRight;
-
-    let vw = window.innerWidth;
-    let vh = window.innerHeight;
-
     const move = (x, y) => {
       let l = x - offLeft;
       if (x - offLeft < 0) l = 0; //offscreen <-
@@ -365,6 +356,14 @@ class Drag {
       this._targetElm.style.height = `${h}px`;
     };
 
+     // define which operation is performed on drag
+     const operation = this.options.mode === 'move' ? move : resize;
+
+     // offset from the initial click to the target boundaries
+     let offTop, offLeft, offBottom, offRight;
+ 
+     let vw = window.innerWidth;
+     let vh = window.innerHeight;
     
 
     function dragStartHandler(e) {
