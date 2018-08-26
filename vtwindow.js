@@ -294,35 +294,38 @@ class Drag {
      * @param {Element} targetElm The element that will be dragged/resized
      * @param {Element} handleElm The element that will listen to events (handdle/grabber)
      * @param {Object} [options] Options
+     * @param {String} [options.mode="move"] Define the type of operation (move/resize)
      * 
-     * @memberOf Drag
      */
     constructor(targetElm, handleElm, options) {
 
-        this.options = {
+        this._options = {
             mode: 'move',
             ...options
         };
         
-        this.targetElm = targetElm;
-        this.handleElm = handleElm;
+        this._targetElm = targetElm;
+        this._handleElm = handleElm;
 
-        let offLeft, offTop, offBottom, offRight;
-
+        
         const move = (x, y) => {
             const t = y - offTop < 0 ? 0 : y - offTop;
             const l = x - offLeft < 0 ? 0 : x - offLeft;
-            this.targetElm.style.top = `${t}px`;
-            this.targetElm.style.left = `${l}px`;
+            this._targetElm.style.top = `${t}px`;
+            this._targetElm.style.left = `${l}px`;
         };
         const resize = (x, y) => {
-            const h = y - this.targetElm.offsetTop - offBottom;
-            const w = x - this.targetElm.offsetLeft - offRight;
-            this.targetElm.style.height = `${h}px`;
-            this.targetElm.style.width = `${w}px`;
+            const w = x - this._targetElm.offsetLeft - offRight;
+            const h = y - this._targetElm.offsetTop - offBottom;
+            this._targetElm.style.width = `${w}px`;
+            this._targetElm.style.height = `${h}px`;
         };
+        
+        // define which operation is performed on drag
+        const operation = this._options.mode === 'move' ? move : resize;
 
-        let operation = options.mode === 'move' ? move : resize;
+        
+        let offLeft, offTop, offBottom, offRight;
 
         function dragStartHandler(e) {
             const touch = e.type === 'touchstart';
@@ -332,7 +335,7 @@ class Drag {
                 const x = touch ? e.touches[0].clientX : e.clientX;
                 const y = touch ? e.touches[0].clientY : e.clientY;
                 
-                const targetOffset = this.targetElm.getBoundingClientRect();
+                const targetOffset = this._targetElm.getBoundingClientRect();
                 
                 //offset from the click to the top-left corner of the target (drag)
                 offTop = y - targetOffset.y;
@@ -348,7 +351,7 @@ class Drag {
                 document.addEventListener('touchmove', this._dragMoveHandler, {passive:false});
                 document.addEventListener('touchend', this._dragEndHandler);
 
-                this.targetElm.classList.add('drag');
+                this._targetElm.classList.add('drag');
             }
         }
         
@@ -378,7 +381,7 @@ class Drag {
             document.removeEventListener('touchmove', this._dragMoveHandler);
             document.removeEventListener('touchend', this._dragEndHandler);
 
-            this.targetElm.classList.remove('drag');
+            this._targetElm.classList.remove('drag');
         }
 
         // We need to bind the handlers to this instance and expose them to methods enable and destroy
@@ -394,8 +397,8 @@ class Drag {
      * @memberOf Drag
      */
     enable() {
-        this.handleElm.addEventListener('mousedown', this._dragStartHandler);
-        this.handleElm.addEventListener('touchstart', this._dragStartHandler);
+        this._handleElm.addEventListener('mousedown', this._dragStartHandler);
+        this._handleElm.addEventListener('touchstart', this._dragStartHandler);
     }
 
     /**
@@ -403,15 +406,15 @@ class Drag {
      * You can resurrect this instance by calling enable()
      * @memberOf Drag
      */
-    destroy(){
+    destroy() {
         this.target.classList.remove('drag');
         
         //mouse events
-        this.handleElm.removeEventListener('mousedown', this._dragStartHandler);
+        this._handleElm.removeEventListener('mousedown', this._dragStartHandler);
         document.removeEventListener('mousemove', this._dragMoveHandler);
         document.removeEventListener('mouseup', this._dragEndHandler);
         //touch events
-        this.handleElm.addEventListener('touchstart', this._dragStartHandler);
+        this._handleElm.addEventListener('touchstart', this._dragStartHandler);
         document.removeEventListener('touchmove', this._dragMoveHandler);
         document.removeEventListener('touchend', this._dragEndHandler);
     }
