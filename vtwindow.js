@@ -1,13 +1,46 @@
+function noop() { }
+
 /**
  * A Virtual windows system for the browser written in vanilla js
  * @see https://github.com/victornpb/VtWindow
  * @author Victor N. wwww.vitim.us
+ * 
  */
 class VtWindow {
+  /**
+   * @param  {object} [content] Object with the initial content
+   * @param  {string|Element} [content.title] Title of the window
+   * @param  {string|Element} [content.body] Content of the window
+   * 
+   * @param  {object} [options] Object with options
+   * @param  {boolean} [options.preserveFocusOrder=true] Preserve window order after focusing (disable if you need to use iframes inside windows)
+   * @param  {boolean} [options.autoMount=false] Automatically call mount() after instantiation
+   * @param  {boolean} [options.lowEnd=false] Turn on optimazations for low end devices
+   * 
+   * @param  {Element} [options.container=document.body] Where the window should be mounted to (cannot be changed after instantiation)
+   * @param  {string} [options.template] Template used to construct the window
+   * 
+   * @param  {function} [options.onMinimize] Callback
+   * @param  {function} [options.onMaximize] Callback
+   * @param  {function} [options.onMount] Callback
+   * @param  {function} [options.onUnmount] Callback
+   * @param  {function} [options.onShow] Callback
+   * @param  {function} [options.onHide] Callback
+   * @param  {function} [options.onPopout] Callback
+   * @param  {function} [options.onExitPopout] Callback
+   * @param  {function} [options.onFocus] Callback
+   * @param  {function} [options.onBlur] Callback
+   * 
+   * @return {VtWindow} A VtWindow instance
+   */  
   constructor(content, options) {
 
-    function noop() { }
-
+    content = {
+      title: 'Untitled',
+      body: '<!-- Empty -->',
+      ...content,
+    };
+    
     this.options = {
       preserveFocusOrder: true, //preserve window order after focusing (disable if you need to use iframes inside windows)
       autoMount: false, //mount on new
@@ -26,36 +59,48 @@ class VtWindow {
       onFocus: noop,
       onBlur: noop,
 
+      template: /*html*/`
+        <div name="header">
+          <span name="title">${content.title}</span>
+          <span name="controls">
+            <button name="popout">^</button>
+            <button name="maximize">+</button>
+            <button name="minimize">_</button>
+            <button name="close">x</button>
+          </span>
+        </div>
+        <div name="body">
+          ${content.body}
+        </div>
+        <div name="footer">
+          <div name="grab"></div>
+        </div>
+      `,
+
       ...options,
     };
 
     // private props
+    /** @private */
     this._id = `instance-${Math.random()}`; //TODO: remove the need for ID or implement propper ID generation
+    /** @private */
     this._container = this.options.container; //cannot be changed after creation
+    /** @private */
     this._mounted = false;
+    /** @private */
     this._maximized = false;
+    /** @private */
     this._minimized = false;
+    /** @private */
+    this._focused = false;
 
+    /**
+     * The window root element
+     * @type {HTMLElement}
+     */
     this.el = (() => {
       const div = document.createElement('div');
-      div.innerHTML = `
-            <div name="header">
-                <span name="title">This is my dope window</span>
-                <span name="controls">
-                    <button name="popout">^</button>
-                    <button name="maximize">+</button>
-                    <button name="minimize">_</button>
-                    <button name="close">x</button>
-                </span>
-            </div>
-            <div name="body">
-                <h1>Hello World!</h1>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                </div>
-            <div name="footer">
-                <div name="grab"></div>
-            </div>
-            `;
+      div.innerHTML = this.options.template;
       return div;
     })();
 
@@ -68,15 +113,19 @@ class VtWindow {
       return this.el.querySelector(selector);
     };
 
+    /**
+     * Elements of the window
+     */
     this.DOM = {
       header: $('[name=header]'),
       title: $('[name=title]'),
       controls: $('[name=controls]'),
-      body: $('[name=body]'),
-      close: $('[name=close]'),
       popout: $('[name=popout]'),
-      minimize: $('[name=minimize]'),
       maximize: $('[name=maximize]'),
+      minimize: $('[name=minimize]'),
+      close: $('[name=close]'),
+      body: $('[name=body]'),
+      footer: $('[name=footer]'),
       resize: $('[name=grab]'),
     };
 
@@ -87,24 +136,31 @@ class VtWindow {
     this.DOM.maximize.onclick = this.maximize.bind(this);
     this.DOM.title.ondblclick = this.maximize.bind(this);
 
-    this._focused = false;
 
-    // auto focus on click
+    /**
+     * handler responsible for auto focusing when you click inside a window
+     * @listens mousedown
+     */
     const focusHandler = e => {
       if (this._focused === false && this._mounted === true) {
         //fired only when switching states
         this.focus();
       }
     };
+    /** @private */
     this._focusHandler = focusHandler;
 
-    // handler registed when the window gain focus, so it can auto blur when clicking outside window
+    /**
+     * handler registed when the window gain focus, so it can auto blur when clicking outside window
+     * @listens mousedown
+     */
     const globalBlurHandler = e => {
       if (!this.el.contains(e.target)) {
         // click outside el
         this.blur();
       }
     };
+    /** @private */
     this._blurHandler = globalBlurHandler;
 
     this.el.classList.add('vt-window');
@@ -117,11 +173,20 @@ class VtWindow {
 
     if (this.options.lowEnd) this.el.classList.add('low-end');
 
-    //init drag n drop
+    
+    /** 
+     * Drag move instance
+     * @private
+     */
     this._dragMove = new Drag(this.el, this.DOM.header, { mode: 'move' });
+
+    /** 
+     * Drag resize instance
+     * @private
+     */
     this._dragResize = new Drag(this.el, this.DOM.resize, { mode: 'resize' });
 
-    this.blur();
+    this.blur(); //start on blurred state so the reciprocical blur/focus events starts
 
     if (this.options.autoMount) this.mount();
   }
@@ -245,52 +310,57 @@ class VtWindow {
     return this._focused;
   }
 
-  setTitle(elm) {
-    if (typeof elm === 'string') {
-      this.DOM.title.innerHTML = elm;
+  /**
+   * Change the current title
+   * @param {Element|string} title 
+   */
+  setTitle(title) {
+    if (typeof title === 'string') {
+      this.DOM.title.innerHTML = title;
     } else {
       this.DOM.title.innerHTML = '';
-      this.DOM.title.appendChild(elm);
+      this.DOM.title.appendChild(title);
     }
   }
 
   /**
-   * @param  {} elm
+   * change the current content
+   * @param  {Element|string} body
    */
-  setBody(elm) {
-    if (typeof elm === 'string') {
-      this.DOM.body.innerHTML = elm;
+  setBody(body) {
+    if (typeof body === 'string') {
+      this.DOM.body.innerHTML = body;
     } else {
       this.DOM.body.innerHTML = '';
-      this.DOM.body.appendChild(elm);
+      this.DOM.body.appendChild(body);
     }
   }
 
   /**
    * Show the close button
-   * @param  {Boolean} bool {description}
+   * @param  {boolean} bool {description}
    */
   set closable(bool) {
     this.DOM.close.style.display = bool ? '' : 'none';
   }
   /**
    * Show the minimize button
-   * @param  {Boolean} bool {description}
+   * @param  {boolean} bool {description}
    */
   set minimizable(bool) {
     this.DOM.minimize.style.display = bool ? '' : 'none';
   }
   /**
    * Enable a virtual window to be deatachable from anoter window (popup)
-   * @param  {Boolean} bool {description}
+   * @param  {boolean} bool {description}
    */
   set deatachable(bool) {
     this.DOM.popout.style.display = bool ? '' : 'none';
   }
   /**
    * Position from the top in pixels
-   * @type {Number}
-   * @param {Number} px
+   * @type {number}
+   * @param {number} px
    */
   set top(px) {
     this.el.style.top = `${px}px`;
@@ -300,8 +370,8 @@ class VtWindow {
   }
   /**
    * Position from the left in pixels
-   * @type {Number}
-   * @param {Number} px
+   * @type {number}
+   * @param {number} px
    */
   set left(px) {
     this.el.style.left = `${px}px`;
@@ -311,8 +381,8 @@ class VtWindow {
   }
   /**
    * Width in pixels
-   * @type {Number}
-   * @param {Number} px
+   * @type {number}
+   * @param {number} px
    */
   set width(px) {
     this.el.style.width = `${px}px`;
@@ -322,8 +392,8 @@ class VtWindow {
   }
   /**
    * Height in pixels
-   * @type {Number}
-   * @param {Number} px Height in pixels
+   * @type {number}
+   * @param {number} px Height in pixels
    */
   set height(px) {
     this.el.style.height = `${px}px`;
@@ -338,12 +408,12 @@ class Drag {
    * Make a element draggable/resizable
    * @param {Element} targetElm The element that will be dragged/resized
    * @param {Element} handleElm The element that will listen to events (handdle/grabber)
-   * @param {Object} [options] Options
-   * @param {String} [options.mode="move"] Define the type of operation (move/resize)
-   * @param {Number} [options.minWidth=200] Minimum width allowed to resize
-   * @param {Number} [options.maxWidth=Infinity] Maximum width allowed to resize
-   * @param {Number} [options.minHeight=100] Maximum height allowed to resize
-   * @param {Number} [options.maxHeight=Infinity] Maximum height allowed to resize
+   * @param {object} [options] Options
+   * @param {string} [options.mode="move"] Define the type of operation (move/resize)
+   * @param {number} [options.minWidth=200] Minimum width allowed to resize
+   * @param {number} [options.maxWidth=Infinity] Maximum width allowed to resize
+   * @param {number} [options.minHeight=100] Maximum height allowed to resize
+   * @param {number} [options.maxHeight=Infinity] Maximum height allowed to resize
    */
   constructor(targetElm, handleElm, options) {
     this.options = {

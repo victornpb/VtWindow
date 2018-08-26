@@ -9,12 +9,14 @@
     <script src="vtwindow.js"></script>
 </head>
 <body>
+    <h1>Hello</h1>
+    <div id="windows"></div>
     <script>
         
-        var w1 = new VtWindow();
+        var w1 = new VtWindow(null, {container: windows});
         w1.mount();
 
-        var w2 = new VtWindow();
+        var w2 = new VtWindow(null, {container: windows});
         w2.mount();
         w2.setTitle('Hahahaha');
         w2.setBody('FOO BAR');
