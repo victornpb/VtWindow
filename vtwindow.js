@@ -311,47 +311,61 @@ class Drag {
    * @param {Element} handleElm The element that will listen to events (handdle/grabber)
    * @param {Object} [options] Options
    * @param {String} [options.mode="move"] Define the type of operation (move/resize)
-   *
+   * @param {Number} [options.minWidth=200] Minimum width allowed to resize
+   * @param {Number} [options.maxWidth=Infinity] Maximum width allowed to resize
+   * @param {Number} [options.minHeight=100] Maximum height allowed to resize
+   * @param {Number} [options.maxHeight=Infinity] Maximum height allowed to resize
    */
   constructor(targetElm, handleElm, options) {
-    this._options = {
+    this.options = {
       mode: 'move',
+      minWidth: 200,
+      maxWidth: Infinity,
+      minHeight: 100,
+      maxHeight: Infinity,
       ...options,
     };
 
     this._targetElm = targetElm;
     this._handleElm = handleElm;
 
+    // define which operation is performed on drag
+    const operation = this.options.mode === 'move' ? move : resize;
+
+    // offset from the initial click to the target boundaries
+    let offTop, offLeft, offBottom, offRight;
+
     let vw = window.innerWidth;
     let vh = window.innerHeight;
 
     const move = (x, y) => {
       let l = x - offLeft;
-      if (x - offLeft < 0) l = 0;
-      else if (x - offRight > vw) l = vw - this._targetElm.clientWidth;
+      if (x - offLeft < 0) l = 0; //offscreen <-
+      else if (x - offRight > vw) l = vw - this._targetElm.clientWidth; //offscreen ->
       let t = y - offTop;
-      if (y - offTop < 0) t = 0;
-      else if (y - offBottom > vh) t = vh - this._targetElm.clientHeight;
+      if (y - offTop < 0) t = 0; //offscreen /\
+      else if (y - offBottom > vh) t = vh - this._targetElm.clientHeight; //offscreen \/
       
       this._targetElm.style.top = `${t}px`;
       this._targetElm.style.left = `${l}px`;
-      // this._targetElm.style.transform = `translate(${l}px, ${t}px)`;
+      // this._targetElm.style.transform = `translate(${l}px, ${t}px)`; // profilling wasn't faster than top/left as expected
     };
 
     const resize = (x, y) => {
       let w = x - this._targetElm.offsetLeft - offRight;
-      if (x - offRight > vw) w = vw - this._targetElm.offsetLeft; //offscreen
+      if (x - offRight > vw) w = Math.min(vw - this._targetElm.offsetLeft, this.options.maxWidth); //offscreen ->
+      else if (x - offRight - this._targetElm.offsetLeft > this.options.maxWidth) w = this.options.maxWidth; //max width
+      else if (x - offRight - this._targetElm.offsetLeft < this.options.minWidth) w = this.options.minWidth; //min width
       let h = y - this._targetElm.offsetTop - offBottom;       
-      if (y - offBottom > vh) h = vh - this._targetElm.offsetTop; //offscreen
+      if (y - offBottom > vh) h = Math.min(vh - this._targetElm.offsetTop, this.options.maxHeight); //offscreen \/
+      else if (y - offBottom - this._targetElm.offsetTop > this.options.maxHeight) h = this.options.maxHeight; //max height
+      else if (y- offBottom - this._targetElm.offsetTop < this.options.minHeight) h = this.options.minHeight; //min height
 
       this._targetElm.style.width = `${w}px`;
       this._targetElm.style.height = `${h}px`;
     };
 
-    // define which operation is performed on drag
-    const operation = this._options.mode === 'move' ? move : resize;
-
-    let offLeft, offTop, offBottom, offRight;
+    
 
     function dragStartHandler(e) {
       const touch = e.type === 'touchstart';

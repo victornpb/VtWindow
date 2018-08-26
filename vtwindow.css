@@ -121,7 +121,7 @@
     display: flex;
   }
   .vt-window.drag {
-    will-change: top, left, width, height;
+    will-change: top, left, width, height, transform;
   }
 
   .vt-window.low-end.drag{
