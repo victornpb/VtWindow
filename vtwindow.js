@@ -323,14 +323,29 @@ class Drag {
     this._handleElm = handleElm;
 
     const move = (x, y) => {
-      const t = y - offTop < 0 ? 0 : y - offTop;
-      const l = x - offLeft < 0 ? 0 : x - offLeft;
-      this._targetElm.style.top = `${t}px`;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      
+      let l = x - offLeft;
+      if (x - offLeft < 0) l = 0;
+      if (x - offRight > vw) l = vw - this._targetElm.clientWidth;
+      let t = y - offTop;
+      if (y - offTop < 0) t = 0;
+      if (y - offBottom > vh) t = vh - this._targetElm.clientHeight;
+      
       this._targetElm.style.left = `${l}px`;
+      this._targetElm.style.top = `${t}px`;
     };
+
     const resize = (x, y) => {
-      const w = x - this._targetElm.offsetLeft - offRight;
-      const h = y - this._targetElm.offsetTop - offBottom;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      let w = x - this._targetElm.offsetLeft - offRight;
+      if (x - offRight > vw) w = vw - this._targetElm.offsetLeft;
+      let h = y - this._targetElm.offsetTop - offBottom;                                                                                                                                                        
+      if (y - offBottom > vh) h = vh - this._targetElm.offsetTop;
+
       this._targetElm.style.width = `${w}px`;
       this._targetElm.style.height = `${h}px`;
     };
