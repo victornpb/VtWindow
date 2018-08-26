@@ -305,14 +305,33 @@ class Drag {
         let offX, offY, tW, tH;
 
         function dragStartHandler(e) {
-            if(e.buttons===1){
-                console.log('onmousedown');
+            if(e.buttons===1 || e.type==="touchstart"){
+                console.log('dragStart', e);
+                
+                offX = e.clientX;
+                offY = e.clientY;
+                
+                const targetOffset = this.target.getBoundingClientRect();
+                if(e.type==='touchstart') {
+                    offX = e.touches[0].clientX;
+                    offY = e.touches[0].clientY;
+                }
+                
+                if(resizeMode) {
+                    offX-=targetOffset.x+targetOffset.width;
+                    offY-=targetOffset.y+targetOffset.height;
+                }
+                else {
+                    offX-=targetOffset.x;
+                    offY-=targetOffset.y;
+                }
 
-                offX = e.offsetX;
-                offY = e.offsetY;
-
+                //mouse events
                 document.addEventListener('mousemove', this._dragMoveHandler);
                 document.addEventListener('mouseup', this._dragEndHandler);
+                //touch events
+                document.addEventListener('touchmove', this._dragMoveHandler, {passive:false});
+                document.addEventListener('touchend', this._dragEndHandler);
 
                 this.target.classList.add('drag');
             }
@@ -320,35 +339,54 @@ class Drag {
         
         function dragMoveHandler(e) {
             e.preventDefault();
-            // console.log('mouseMoveHandler', e /* `clientX=${e.clientX} layerX=${e.layerX} offsetX=${e.offsetX} pageX=${e.pageX} screenX=${e.screenX}`, e.target */);
+            console.log('dragMove', e /* `clientX=${e.clientX} layerX=${e.layerX} clientX=${e.offsetX} pageX=${e.pageX} screenX=${e.screenX}`, e.target */);
             
             // If the button is not down, dispatch a "fake" mouse up event, to stop listening to mousemove
             // This happens when the mouseup is not captured (outside the browser)
             if(e.buttons!==1 || e.which!==1) {
                 // console.log('artificial dragEnd!');
-                this._dragEndHandler();
-                return;
+                // this._dragEndHandler();
+                // return;
             }
 
+            let clientY = e.clientY;
+            let clientX = e.clientX;
+
+            if(e.type==='touchmove'){
+                clientY = e.touches[0].clientY;
+                clientX = e.touches[0].clientX;
+            }
+
+
             if (resizeMode) {
-                let h = e.clientY - target.offsetTop - offY + zone.clientHeight;
-                let w = e.clientX - target.offsetLeft - offX + zone.clientWidth;
+                // let h = clientY - target.offsetTop - offY + zone.clientHeight;
+                // let w = clientX - target.offsetLeft - offX + zone.clientWidth;
+                let h = clientY - target.offsetTop - offY;
+                let w = clientX - target.offsetLeft - offX;
                 // console.log(w, h, `clientX=${target.clientX} layerX=${target.layerX} offsetX=${target.offsetX} pageX=${target.pageX} screenX=${target.screenX} offsetLeft=${target.offsetLeft} scrollLeft=${target.scrollLeft}`);
                 
                 this.target.style.height = `${h}px`;
                 this.target.style.width = `${w}px`;
             } else {
-                let t = e.clientY - offY < 0 ? 0 : e.clientY - offY;
-                let l = e.clientX - offX < 0 ? 0 : e.clientX - offX;
+                let t = clientY - offY < 0 ? 0 : clientY - offY;
+                let l = clientX - offX < 0 ? 0 : clientX - offX;
                 this.target.style.top = `${t}px`;
                 this.target.style.left = `${l}px`;
+
+                console.log(offX, offY, clientX, clientY);
             }
         }
         
         function dragEndHandler(e) {
-            console.log('mouseUpHandler');
+            console.log('dragEnd', e);
+
+            //touch events
             document.removeEventListener('mousemove', this._dragMoveHandler);
             document.removeEventListener('mouseup', this._dragEndHandler);
+            //mouse events
+            document.removeEventListener('touchmove', this._dragMoveHandler);
+            document.removeEventListener('touchend', this._dragEndHandler);
+
             this.target.classList.remove('drag');
         }
 
@@ -366,6 +404,7 @@ class Drag {
      */
     enable() {
         this.zone.addEventListener('mousedown', this._dragStartHandler);
+        this.zone.addEventListener('touchstart', this._dragStartHandler);
     }
 
     /**
@@ -375,9 +414,15 @@ class Drag {
      */
     destroy(){
         this.target.classList.remove('drag');
+        
+        //mouse events
         this.zone.removeEventListener('mousedown', this._dragStartHandler);
         document.removeEventListener('mousemove', this._dragMoveHandler);
         document.removeEventListener('mouseup', this._dragEndHandler);
+        //touch events
+        this.zone.addEventListener('touchstart', this._dragStartHandler);
+        document.removeEventListener('touchmove', this._dragMoveHandler);
+        document.removeEventListener('touchend', this._dragEndHandler);
     }
 }
 
