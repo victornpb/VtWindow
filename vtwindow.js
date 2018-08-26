@@ -213,13 +213,14 @@ class VtWindow {
     this.minimizable = this.options.minimizable;
     this.maximizable = this.options.maximizable;
     this.deatachable = this.options.deatachable;
-    this.resizeable = this.options.resizeable;
+    this.resizable = this.options.resizable;
     
     this.setTitle(content.title);
     this.setBody(content.body);
 
     if (this.options.autoMount) this.mount();
   }
+
   mount() {
     this._container.appendChild(this.el);
     this.el.classList.add('virtual');
@@ -377,7 +378,7 @@ class VtWindow {
    * Show the resize grabber
    * @param  {boolean} bool {description}
    */
-  set resizeable(bool) {
+  set resizable(bool) {
     this.DOM.resize.style.display = bool ? '' : 'none';
     this.DOM.resize.disabled = !bool;
 
@@ -411,6 +412,7 @@ class VtWindow {
   set maximizable(bool) {
     this.DOM.maximize.style.display = bool ? '' : 'none';
     this.DOM.maximize.disabled = !bool;
+
   }
   /**
    * Enable a virtual window to be deatachable from anoter window (popup)
