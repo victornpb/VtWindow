@@ -5,17 +5,33 @@
  */
 class VtWindow {
   constructor(content, options) {
+
+    function noop() { }
+
     this.options = {
       preserveFocusOrder: true, //preserve window order after focusing (disable if you need to use iframes inside windows)
       autoMount: false, //mount on new
       lowEnd: false,
+
+      container: document.body,
+
+      onMinimize: noop,
+      onMaximize: noop,
+      onMount: noop,
+      onUnmount: noop,
+      onShow: noop,
+      onHide: noop,
+      onPopout: noop,
+      onExitPopout: noop,
+      onFocus: noop,
+      onBlur: noop,
 
       ...options,
     };
 
     // private props
     this._id = `instance-${Math.random()}`; //TODO: remove the need for ID or implement propper ID generation
-    this._parent = undefined;
+    this._parent = this.options.container; //cannot be changed after creation
     this._mounted = false;
     this._maximized = false;
     this._minimized = false;
@@ -109,28 +125,29 @@ class VtWindow {
 
     if (this.options.autoMount) this.mount();
   }
-  mount(parentEl) {
-    const parent = parentEl || document.body;
-    parent.appendChild(this.el);
+  mount() {
+    this._parent.appendChild(this.el);
     this.el.classList.add('virtual');
-    // modify props only after the append was successful
-    this._parent = parent;
-    this._mounted = true;
+    this._mounted = true; // modify props only after the append was successful
+
+    if (this.options.onMount) this.options.onMount(this);
   }
   unmount() {
     this._parent.removeChild(this.el);
-    // modify props only after the append was successful
-    this._mounted = false;
-    // should we clear _parent after unmount? NO! (will break focus, bring to front)
+    this._mounted = false; // modify props only after the append was successful
+   
+    if (this.options.onUnmount) this.options.onUnmount(this);
   }
   get isMounted() {
     return this._mounted; //TODO: verify if this.el is inside this._parent
   }
   show() {
     this.el.style.display = '';
+    if (this.options.onShow) this.options.onShow(this);
   }
   hide() {
     this.el.style.display = 'none';
+    if (this.options.onHide) this.options.onHide(this);
   }
   minimize() {
     if (this._maximized) {
@@ -138,6 +155,7 @@ class VtWindow {
     }
     this.el.classList.toggle('minimized', this._minimized);
     this._minimized = !this._minimized;
+    if (this.options.onMinimize) this.options.onMinimize(this);
   }
   get isMinimized() {
     return this._minimized;
@@ -147,6 +165,7 @@ class VtWindow {
     this.el.classList.toggle('maximized', this._maximized);
     // this.el.style.top = '0';
     // this.el.style.left = '0';
+    if (this.options.onMaximize) this.options.onMaximize(this);
   }
   get isMaximized() {
     return this._maximized;
@@ -179,11 +198,51 @@ class VtWindow {
     this.popup.onbeforeunload = () => {
       this.exitpopout();
     };
+
+    if (this.options.onPopout) this.options.onPopout(this);
   }
 
   exitpopout() {
     this.el.classList.remove('windowed');
     this.mount();
+
+    if (this.options.onExitPopout) this.options.onExitPopout(this);
+  }
+
+  focus() {
+    if (!this._mounted) throw new Error('Cannot set focus on unmounted window');
+
+    //bring to front, move down into DOM tree
+    if (this.options.preserveFocusOrder) {
+      //it will force iframes to reload on focus
+      this._parent.appendChild(this.el);
+    }
+
+    this.el.classList.add('focus');
+    this._focused = true;
+
+    // this.el.style.zIndex = 1;
+
+    this.el.removeEventListener('mousedown', this._focusHandler); //already focused we don't need to listen to this event anymore
+    document.addEventListener('mousedown', this._blurHandler); //register event waiting for a click outsised (aka blur)
+
+    if (this.options.onFocus) this.options.onFocus(this);
+  }
+
+  blur() {
+    this.el.classList.remove('focus');
+    this._focused = false;
+
+    // this.el.style.zIndex = 0;
+
+    document.removeEventListener('mousedown', this._blurHandler); //already blurred we don't need to listen to this event anymore
+    this.el.addEventListener('mousedown', this._focusHandler); //register event waiting for a click inside (aka focus)
+
+    if (this.options.onBlur) this.options.onBlur(this);
+  }
+
+  get isFocused() {
+    return this._focused;
   }
 
   setTitle(elm) {
@@ -207,36 +266,6 @@ class VtWindow {
     }
   }
 
-  focus() {
-    this.el.classList.add('focus');
-    this._focused = true;
-
-    //bring to front, move down into body
-    if (this.options.preserveFocusOrder) {
-      //it will force iframes to reload on focus
-      this.unmount();
-      this.mount();
-    }
-
-    // this.el.style.zIndex = 1;
-
-    this.el.removeEventListener('mousedown', this._focusHandler);
-    document.addEventListener('mousedown', this._blurHandler);
-  }
-
-  blur() {
-    this.el.classList.remove('focus');
-    this._focused = false;
-
-    // this.el.style.zIndex = 0;
-
-    document.removeEventListener('mousedown', this._blurHandler);
-    this.el.addEventListener('mousedown', this._focusHandler);
-  }
-
-  get isFocused() {
-    return this._focused;
-  }
   /**
    * Show the close button
    * @param  {Boolean} bool {description}
