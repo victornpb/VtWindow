@@ -351,8 +351,9 @@ class VtWindow {
       this.DOM.title.innerHTML = '';
       this.DOM.title.appendChild(title);
     }
-
-    this.el.setAttribute('arial-label', this.DOM.title.innerText);
+    const text = this.DOM.title.innerText;
+    this.DOM.title.setAttribute('title', text);
+    this.el.setAttribute('arial-label', text);
   }
 
   /**
