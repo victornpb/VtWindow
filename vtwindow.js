@@ -111,8 +111,8 @@ class VtWindow {
 
         
         //init drag n drop
-        this._drag = new Drag(this.DOM.header, this.el);
-        this._resize = new Drag(this.DOM.resize, this.el, true);
+        this._drag = new Drag(this.el, this.DOM.header, {mode: 'move'});
+        this._resize = new Drag(this.el, this.DOM.resize, {mode: 'resize'});
 
 
         this.blur();
@@ -291,40 +291,55 @@ class VtWindow {
 class Drag {
     /**
      * Make a element draggable/resizable
-     * @param {Element} zone The element that will listen to events (handdle/grabber)
-     * @param {Element} target The element that will be dragged/resized
-     * @param {boolean} [resizeMode=false] Drag or Resize mode (dafault is move/drag)
+     * @param {Element} targetElm The element that will be dragged/resized
+     * @param {Element} handleElm The element that will listen to events (handdle/grabber)
+     * @param {Object} [options] Options
      * 
      * @memberOf Drag
      */
-    constructor(zone, target, resizeMode=false) {
-        
-        this.zone = zone;
-        this.target = target;
+    constructor(targetElm, handleElm, options) {
 
-        let offX, offY, tW, tH;
+        this.options = {
+            mode: 'move',
+            ...options
+        };
+        
+        this.targetElm = targetElm;
+        this.handleElm = handleElm;
+
+        let offLeft, offTop, offBottom, offRight;
+
+        const move = (x, y) => {
+            const t = y - offTop < 0 ? 0 : y - offTop;
+            const l = x - offLeft < 0 ? 0 : x - offLeft;
+            this.targetElm.style.top = `${t}px`;
+            this.targetElm.style.left = `${l}px`;
+        };
+        const resize = (x, y) => {
+            const h = y - this.targetElm.offsetTop - offBottom;
+            const w = x - this.targetElm.offsetLeft - offRight;
+            this.targetElm.style.height = `${h}px`;
+            this.targetElm.style.width = `${w}px`;
+        };
+
+        let operation = options.mode === 'move' ? move : resize;
 
         function dragStartHandler(e) {
-            if(e.buttons===1 || e.type==="touchstart"){
-                console.log('dragStart', e);
+            const touch = e.type === 'touchstart';
+
+            if(e.buttons===1 || touch){
                 
-                offX = e.clientX;
-                offY = e.clientY;
+                const x = touch ? e.touches[0].clientX : e.clientX;
+                const y = touch ? e.touches[0].clientY : e.clientY;
                 
-                const targetOffset = this.target.getBoundingClientRect();
-                if(e.type==='touchstart') {
-                    offX = e.touches[0].clientX;
-                    offY = e.touches[0].clientY;
-                }
+                const targetOffset = this.targetElm.getBoundingClientRect();
                 
-                if(resizeMode) {
-                    offX-=targetOffset.x+targetOffset.width;
-                    offY-=targetOffset.y+targetOffset.height;
-                }
-                else {
-                    offX-=targetOffset.x;
-                    offY-=targetOffset.y;
-                }
+                //offset from the click to the top-left corner of the target (drag)
+                offTop = y - targetOffset.y;
+                offLeft = x - targetOffset.x;
+                //offset from the click to the bottom-right corner of the target (resize)
+                offBottom = y - (targetOffset.y + targetOffset.height);
+                offRight = x - (targetOffset.x + targetOffset.width);
 
                 //mouse events
                 document.addEventListener('mousemove', this._dragMoveHandler);
@@ -333,53 +348,29 @@ class Drag {
                 document.addEventListener('touchmove', this._dragMoveHandler, {passive:false});
                 document.addEventListener('touchend', this._dragEndHandler);
 
-                this.target.classList.add('drag');
+                this.targetElm.classList.add('drag');
             }
         }
         
         function dragMoveHandler(e) {
             e.preventDefault();
-            console.log('dragMove', e /* `clientX=${e.clientX} layerX=${e.layerX} clientX=${e.offsetX} pageX=${e.pageX} screenX=${e.screenX}`, e.target */);
+            
+            const touch = e.type === 'touchmove';
             
             // If the button is not down, dispatch a "fake" mouse up event, to stop listening to mousemove
             // This happens when the mouseup is not captured (outside the browser)
-            if(e.buttons!==1 || e.which!==1) {
-                // console.log('artificial dragEnd!');
-                // this._dragEndHandler();
-                // return;
+            if(!touch && e.buttons!==1) {
+                this._dragEndHandler();
+                return;
             }
 
-            let clientY = e.clientY;
-            let clientX = e.clientX;
+            const y = touch ? e.touches[0].clientY : e.clientY;
+            const x = touch ? e.touches[0].clientX : e.clientX;
 
-            if(e.type==='touchmove'){
-                clientY = e.touches[0].clientY;
-                clientX = e.touches[0].clientX;
-            }
-
-
-            if (resizeMode) {
-                // let h = clientY - target.offsetTop - offY + zone.clientHeight;
-                // let w = clientX - target.offsetLeft - offX + zone.clientWidth;
-                let h = clientY - target.offsetTop - offY;
-                let w = clientX - target.offsetLeft - offX;
-                // console.log(w, h, `clientX=${target.clientX} layerX=${target.layerX} offsetX=${target.offsetX} pageX=${target.pageX} screenX=${target.screenX} offsetLeft=${target.offsetLeft} scrollLeft=${target.scrollLeft}`);
-                
-                this.target.style.height = `${h}px`;
-                this.target.style.width = `${w}px`;
-            } else {
-                let t = clientY - offY < 0 ? 0 : clientY - offY;
-                let l = clientX - offX < 0 ? 0 : clientX - offX;
-                this.target.style.top = `${t}px`;
-                this.target.style.left = `${l}px`;
-
-                console.log(offX, offY, clientX, clientY);
-            }
+            operation(x, y);
         }
         
         function dragEndHandler(e) {
-            console.log('dragEnd', e);
-
             //touch events
             document.removeEventListener('mousemove', this._dragMoveHandler);
             document.removeEventListener('mouseup', this._dragEndHandler);
@@ -387,7 +378,7 @@ class Drag {
             document.removeEventListener('touchmove', this._dragMoveHandler);
             document.removeEventListener('touchend', this._dragEndHandler);
 
-            this.target.classList.remove('drag');
+            this.targetElm.classList.remove('drag');
         }
 
         // We need to bind the handlers to this instance and expose them to methods enable and destroy
@@ -403,8 +394,8 @@ class Drag {
      * @memberOf Drag
      */
     enable() {
-        this.zone.addEventListener('mousedown', this._dragStartHandler);
-        this.zone.addEventListener('touchstart', this._dragStartHandler);
+        this.handleElm.addEventListener('mousedown', this._dragStartHandler);
+        this.handleElm.addEventListener('touchstart', this._dragStartHandler);
     }
 
     /**
@@ -416,14 +407,48 @@ class Drag {
         this.target.classList.remove('drag');
         
         //mouse events
-        this.zone.removeEventListener('mousedown', this._dragStartHandler);
+        this.handleElm.removeEventListener('mousedown', this._dragStartHandler);
         document.removeEventListener('mousemove', this._dragMoveHandler);
         document.removeEventListener('mouseup', this._dragEndHandler);
         //touch events
-        this.zone.addEventListener('touchstart', this._dragStartHandler);
+        this.handleElm.addEventListener('touchstart', this._dragStartHandler);
         document.removeEventListener('touchmove', this._dragMoveHandler);
         document.removeEventListener('touchend', this._dragEndHandler);
     }
 }
 
 // export default VtWindow;
+
+
+
+function throttle(func, wait, options) {
+    var context, args, result;
+    var timeout = null;
+    var previous = 0;
+    if (!options) options = {};
+    var later = function() {
+      previous = options.leading === false ? 0 : Date.now();
+      timeout = null;
+      result = func.apply(context, args);
+      if (!timeout) context = args = null;
+    };
+    return function() {
+      var now = Date.now();
+      if (!previous && options.leading === false) previous = now;
+      var remaining = wait - (now - previous);
+      context = this;
+      args = arguments;
+      if (remaining <= 0 || remaining > wait) {
+        if (timeout) {
+          clearTimeout(timeout);
+          timeout = null;
+        }
+        previous = now;
+        result = func.apply(context, args);
+        if (!timeout) context = args = null;
+      } else if (!timeout && options.trailing !== false) {
+        timeout = setTimeout(later, remaining);
+      }
+      return result;
+    };
+  };
