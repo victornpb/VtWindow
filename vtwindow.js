@@ -60,6 +60,7 @@ class VtWindow {
       onBlur: noop,
 
       template: /*html*/`
+      <div role="dialog" aria-label="${content.title}">
         <div name="header">
           <span name="title">${content.title}</span>
           <span name="controls">
@@ -75,6 +76,7 @@ class VtWindow {
         <div name="footer">
           <div name="grab"></div>
         </div>
+      </div>
       `,
 
       ...options,
@@ -101,7 +103,7 @@ class VtWindow {
     this.el = (() => {
       const div = document.createElement('div');
       div.innerHTML = this.options.template;
-      return div;
+      return div.firstElementChild;
     })();
 
     /**
