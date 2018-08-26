@@ -131,7 +131,7 @@
 
   .vt-window.low-end.drag{
     /* display: none; */
-    transition: all 500ms ease;
+    transition: all 500ms linear;
   }
 
   /* fix issued with iframes */
