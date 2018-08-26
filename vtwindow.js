@@ -341,6 +341,14 @@ class VtWindow {
   }
 
   /**
+   * Show the resize grabber
+   * @param  {boolean} bool {description}
+   */
+  set resizeable(bool) {
+    this.DOM.resize.style.display = bool ? '' : 'none';
+    this.DOM.resize.disabled = !bool;
+  }
+  /**
    * Show the close button
    * @param  {boolean} bool {description}
    */
