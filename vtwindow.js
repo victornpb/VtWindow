@@ -248,8 +248,12 @@ class VtWindow {
     if (this._maximized) {
       this.maximize(false); //restore
     }
-    this.el.classList.toggle('minimized', this._minimized);
+
     this._minimized = !this._minimized;
+    this.el.classList.toggle('minimized', this._minimized);
+
+    this._dragMove.yAxis = !this._minimized; //turn off dragging in the vertical direction (stuck to bottom)
+
     if (this.options.onMinimize) this.options.onMinimize(this);
   }
   get isMinimized() {
