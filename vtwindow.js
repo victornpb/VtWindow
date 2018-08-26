@@ -324,24 +324,25 @@ class Drag {
 
     let vw = window.innerWidth;
     let vh = window.innerHeight;
-      
+
     const move = (x, y) => {
       let l = x - offLeft;
       if (x - offLeft < 0) l = 0;
-      if (x - offRight > vw) l = vw - this._targetElm.clientWidth;
+      else if (x - offRight > vw) l = vw - this._targetElm.clientWidth;
       let t = y - offTop;
       if (y - offTop < 0) t = 0;
-      if (y - offBottom > vh) t = vh - this._targetElm.clientHeight;
+      else if (y - offBottom > vh) t = vh - this._targetElm.clientHeight;
       
-      this._targetElm.style.left = `${l}px`;
       this._targetElm.style.top = `${t}px`;
+      this._targetElm.style.left = `${l}px`;
+      // this._targetElm.style.transform = `translate(${l}px, ${t}px)`;
     };
 
     const resize = (x, y) => {
       let w = x - this._targetElm.offsetLeft - offRight;
-      if (x - offRight > vw) w = vw - this._targetElm.offsetLeft;
-      let h = y - this._targetElm.offsetTop - offBottom;                                                                                                                                                        
-      if (y - offBottom > vh) h = vh - this._targetElm.offsetTop;
+      if (x - offRight > vw) w = vw - this._targetElm.offsetLeft; //offscreen
+      let h = y - this._targetElm.offsetTop - offBottom;       
+      if (y - offBottom > vh) h = vh - this._targetElm.offsetTop; //offscreen
 
       this._targetElm.style.width = `${w}px`;
       this._targetElm.style.height = `${h}px`;
