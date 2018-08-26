@@ -31,7 +31,7 @@ class VtWindow {
 
     // private props
     this._id = `instance-${Math.random()}`; //TODO: remove the need for ID or implement propper ID generation
-    this._parent = this.options.container; //cannot be changed after creation
+    this._container = this.options.container; //cannot be changed after creation
     this._mounted = false;
     this._maximized = false;
     this._minimized = false;
@@ -126,20 +126,20 @@ class VtWindow {
     if (this.options.autoMount) this.mount();
   }
   mount() {
-    this._parent.appendChild(this.el);
+    this._container.appendChild(this.el);
     this.el.classList.add('virtual');
     this._mounted = true; // modify props only after the append was successful
 
     if (this.options.onMount) this.options.onMount(this);
   }
   unmount() {
-    this._parent.removeChild(this.el);
+    this._container.removeChild(this.el);
     this._mounted = false; // modify props only after the append was successful
    
     if (this.options.onUnmount) this.options.onUnmount(this);
   }
   get isMounted() {
-    return this._mounted; //TODO: verify if this.el is inside this._parent
+    return this._mounted; //TODO: verify if this.el is inside this._container
   }
   show() {
     this.el.style.display = '';
@@ -215,7 +215,7 @@ class VtWindow {
     //bring to front, move down into DOM tree
     if (this.options.preserveFocusOrder) {
       //it will force iframes to reload on focus
-      this._parent.appendChild(this.el);
+      this._container.appendChild(this.el);
     }
 
     this.el.classList.add('focus');
