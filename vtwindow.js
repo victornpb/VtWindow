@@ -375,6 +375,13 @@ class VtWindow {
   set resizeable(bool) {
     this.DOM.resize.style.display = bool ? '' : 'none';
     this.DOM.resize.disabled = !bool;
+
+    if (bool) {
+      this._dragResize.enable();
+    }
+    else {
+      this._dragResize.destroy();
+    }
   }
   /**
    * Show the close button
@@ -620,6 +627,7 @@ class Drag {
    * @memberOf Drag
    */
   enable() {
+    this.destroy(); // prevent events from getting binded twice
     this._handleElm.addEventListener('mousedown', this._dragStartHandler);
     this._handleElm.addEventListener('touchstart', this._dragStartHandler);
   }
@@ -630,7 +638,7 @@ class Drag {
    * @memberOf Drag
    */
   destroy() {
-    this.target.classList.remove(this.draggingClass);
+    this._targetElm.classList.remove(this.draggingClass);
 
     //mouse events
     this._handleElm.removeEventListener('mousedown', this._dragStartHandler);
