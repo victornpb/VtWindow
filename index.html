@@ -1,22 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <link rel="stylesheet" href="vtwindow.css">
+    <link rel="stylesheet" href="vtwindow-theme.css">
     <script src="vtwindow.js"></script>
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
 </head>
+
 <body>
+
+    <template id="m">
+        <div role="dialog" tabindex="0" aria-label="" class="vt-window-material">
+            <div name="header" class="valign-wrapper deep-purple">
+                <span name="title">${content.title}</span>
+                <span name="controls">
+                    <button name="popout" class="btn-flat"><i class="material-icons">launch</i></button>
+                    <button name="minimize" class="btn-flat"><i class="material-icons">remove</i></button>
+                    <button name="maximize" class="btn-flat"><i class="material-icons">zoom_out_map</i></button>
+                    <button name="close" class="btn-flat"><i class="material-icons">close</i></button>
+                </span>
+            </div>
+            <div name="body">
+                ${content.body}
+                <input type="text">
+            </div>
+            <div name="footer">
+                <div name="grab"></div>
+            </div>
+        </div>
+    </template>
+
+
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
+    <h1>Hello</h1>
     <h1>Hello</h1>
     <div id="windows"></div>
     <script>
-        
-        var w1 = new VtWindow(null, {container: windows});
+
+        var w1 = new VtWindow({title:'material',body:'Material'}, { container: windows, template: m.innerHTML });
         w1.mount();
 
-        var w2 = new VtWindow(null, {container: windows});
+        var w2 = new VtWindow(null, { container: windows, _template: m.innerHTML });
         w2.mount();
         w2.setTitle('Hahahaha');
         w2.setBody('FOO BAR');
@@ -38,8 +111,9 @@
         // w3.width = 250;
         // w3.height = 200;
 
-        
+
 
     </script>
 </body>
+
 </html>
