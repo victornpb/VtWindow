@@ -321,6 +321,8 @@ class VtWindow {
       this.DOM.title.innerHTML = '';
       this.DOM.title.appendChild(title);
     }
+
+    this.el.setAttribute('arial-label', this.DOM.title.innerText);
   }
 
   /**
@@ -342,6 +344,7 @@ class VtWindow {
    */
   set closable(bool) {
     this.DOM.close.style.display = bool ? '' : 'none';
+    this.DOM.close.disabled = !bool;
   }
   /**
    * Show the minimize button
@@ -349,6 +352,15 @@ class VtWindow {
    */
   set minimizable(bool) {
     this.DOM.minimize.style.display = bool ? '' : 'none';
+    this.DOM.minimize.disabled = !bool;
+  }
+  /**
+   * Show the maximize button
+   * @param  {boolean} bool {description}
+   */
+  set maximizable(bool) {
+    this.DOM.maximize.style.display = bool ? '' : 'none';
+    this.DOM.maximize.disabled = !bool;
   }
   /**
    * Enable a virtual window to be deatachable from anoter window (popup)
@@ -356,6 +368,7 @@ class VtWindow {
    */
   set deatachable(bool) {
     this.DOM.popout.style.display = bool ? '' : 'none';
+    this.DOM.popout.disabled = !bool;
   }
   /**
    * Position from the top in pixels
