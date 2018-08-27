@@ -549,6 +549,8 @@ class Drag {
       const touch = e.type === 'touchstart';
 
       if ((e.buttons === 1 || e.which === 1) || touch) {
+        e.preventDefault();
+        
         const x = touch ? e.touches[0].clientX : e.clientX;
         const y = touch ? e.touches[0].clientY : e.clientY;
 
@@ -631,7 +633,7 @@ class Drag {
   enable() {
     this.destroy(); // prevent events from getting binded twice
     this._handleElm.addEventListener('mousedown', this._dragStartHandler);
-    this._handleElm.addEventListener('touchstart', this._dragStartHandler);
+    this._handleElm.addEventListener('touchstart', this._dragStartHandler, { passive: false });
   }
 
   /**
