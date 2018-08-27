@@ -47,7 +47,7 @@
     cursor: -webkit-grab;
     cursor: grab;
     /* height: 22px; */
-    opacity: 0.5;
+    opacity: 0.66;
   }
   .vt-window-material.focus [name='header'] {
     opacity: 1;
