@@ -47,13 +47,12 @@ class VtWindow {
    */  
   constructor(content, options) {
 
-    content = {
+    content = Object.assign({
       title: 'VtWindow',
       body: '<h1>VtWindow</h1>',
-      ...content,
-    };
+    }, content);
     
-    this.options = {
+    this.options = Object.assign({
 
       top: 10,
       left: 10,
@@ -101,9 +100,7 @@ class VtWindow {
         </div>
       </div>
       `,
-
-      ...options,
-    };
+    }, options);
 
     // private props
     /** @private */
@@ -481,7 +478,7 @@ class Drag {
    * @param {number} [options.maxHeight=Infinity] Maximum height allowed to resize
    */
   constructor(targetElm, handleElm, options) {
-    this.options = {
+    this.options = Object.assign({
       mode: 'move',
     
       minWidth: 200,
@@ -492,9 +489,7 @@ class Drag {
       yAxis: true,
 
       draggingClass: 'drag',
-      
-      ...options,
-    };
+    }, options);
 
     this.minWidth = this.options.minWidth;
     this.maxWidth = this.options.maxWidth;
@@ -553,7 +548,7 @@ class Drag {
     function dragStartHandler(e) {
       const touch = e.type === 'touchstart';
 
-      if (e.buttons === 1 || touch) {
+      if ((e.buttons === 1 || e.which === 1) || touch) {
         const x = touch ? e.touches[0].clientX : e.clientX;
         const y = touch ? e.touches[0].clientY : e.clientY;
 
@@ -595,7 +590,7 @@ class Drag {
 
         // If the button is not down, dispatch a "fake" mouse up event, to stop listening to mousemove
         // This happens when the mouseup is not captured (outside the browser)
-        if (e.buttons !== 1) {
+        if ((e.buttons || e.which) !== 1) {
           this._dragEndHandler();
           return;
         }
