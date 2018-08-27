@@ -78,15 +78,61 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     font-size: 13px;
-    
+
     text-rendering: geometricPrecision;
     -webkit-font-smoothing: subpixel-antialiased;
     /* opacity: 0.95; */
   }
-  .vt-window-osx [name='controls'] button {
-    width: 21px;
-    height: 21px;
+  .vt-window-osx [name='controls'] {
+    position: absolute;
+    left: 4px;
+    display: flex; /*remove space between buttons*/
   }
+  .vt-window-osx [name='controls'] button {
+    position: relative;
+    -webkit-appearance: none;
+    border: none;
+    background: none;
+    width: 20px;
+    height: 20px;
+    margin: 0px;
+    padding: 0px;
+  }
+  .vt-window-osx [name='controls'] button:after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    display: block;
+    width: 12px;
+    height: 12px;
+    border-radius: 10px;
+
+    border: 1px solid rgb(229,66,67);
+    background: rgb(255,94,92);
+  }
+
+  .vt-window-osx [name='controls'] button[name="close"]:after {
+    border: 1px solid rgb(229,66,67);
+    background: rgb(255,94,92);
+  }
+
+  .vt-window-osx [name='controls'] button[name="maximize"]:after {
+    border: 1px solid rgb(20,174,21);
+    background: rgb(55,201,64);
+  }
+
+  .vt-window-osx [name='controls'] button[name="minimize"]:after {
+    border: 1px solid rgb(226,159,64);
+    background: rgb(255,189,77);
+  }
+
+  .vt-window-osx [name='controls'] button:disabled:after {
+    border: 1px solid rgb(180,180,180);
+    background: rgb(204,204,204);
+  }
+
+
   .vt-window-osx [name='grab'] {
     /* cursor: nwse-resize;
     position: absolute;
