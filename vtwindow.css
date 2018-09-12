@@ -65,6 +65,9 @@
   cursor: grab;
 
   opacity: 0.5;
+  
+  -webkit-user-select: none;
+  user-select: none;
 }
 .vt-window.focus [name='header'] {
   opacity: 1;
