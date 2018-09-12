@@ -207,7 +207,7 @@ class VtWindow {
     this.left = this.options.left;
     this.width = this.options.width;
     this.height = this.options.height;
-    this.closeable = this.options.closeable;
+    this.closable = this.options.closable;
     this.minimizable = this.options.minimizable;
     this.maximizable = this.options.maximizable;
     this.deatachable = this.options.deatachable;
