@@ -217,6 +217,8 @@ class VtWindow {
     this.setBody(content.body);
 
     if (this.options.autoMount) this.mount();
+    
+    Object.seal(this);
   }
 
   mount() {
