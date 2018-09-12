@@ -123,6 +123,7 @@ class VtWindow {
     this.el = (() => {
       const div = document.createElement('div');
       div.innerHTML = this.options.template;
+      if (div.children.length !== 1) throw new Error(`The template must contain exactly 1 root element!\n${this.options.template}`);
       return div.firstElementChild;
     })();
 
@@ -132,7 +133,9 @@ class VtWindow {
      * @return {Element} A dom element
      */
     const $ = selector => {
-      return this.el.querySelector(selector);
+      const el = this.el.querySelector(selector);
+      if (!el) throw new Error(`The template doesn't not containg an element matching the selector ${selector}.\n ${this.el.innerHTML}`);
+      return el;
     };
 
     /**
