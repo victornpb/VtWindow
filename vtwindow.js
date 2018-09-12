@@ -392,7 +392,7 @@ class VtWindow {
    * @param  {boolean} bool {description}
    */
   set closable(bool) {
-    this.DOM.close.style.display = bool ? '' : 'none';
+    // this.DOM.close.style.display = bool ? '' : 'none';
     this.DOM.close.disabled = !bool;
   }
   /**
@@ -400,7 +400,7 @@ class VtWindow {
    * @param  {boolean} bool {description}
    */
   set minimizable(bool) {
-    this.DOM.minimize.style.display = bool ? '' : 'none';
+    // this.DOM.minimize.style.display = bool ? '' : 'none';
     this.DOM.minimize.disabled = !bool;
   }
   /**
@@ -408,7 +408,7 @@ class VtWindow {
    * @param  {boolean} bool {description}
    */
   set maximizable(bool) {
-    this.DOM.maximize.style.display = bool ? '' : 'none';
+    // this.DOM.maximize.style.display = bool ? '' : 'none';
     this.DOM.maximize.disabled = !bool;
 
   }
@@ -417,7 +417,7 @@ class VtWindow {
    * @param  {boolean} bool {description}
    */
   set deatachable(bool) {
-    this.DOM.popout.style.display = bool ? '' : 'none';
+    // this.DOM.popout.style.display = bool ? '' : 'none';
     this.DOM.popout.disabled = !bool;
   }
   /**
