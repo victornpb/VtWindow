@@ -70,7 +70,7 @@
     background: rgb(246,246,246);
 
     border-top: 1px solid rgb(245,244,245);
-    border-bottom: 1px solid rgb(179,177,179);
+    border-bottom: 1px solid rgb(209, 209, 209);
 
     opacity: 1;
     
@@ -86,6 +86,7 @@
     
     border-top: 1px solid rgb(245,244,245);
     border-bottom: 1px solid rgb(179,177,179);
+    
 
     opacity: 1;
   }
@@ -133,26 +134,26 @@
     height: 12px;
     border-radius: 10px;
 
+    border: 1px solid rgb(207, 207, 207);
+    background: rgb(219, 219, 219);
+  }
+
+  .vt-window-osx.focus [name='controls'] button[name="close"]:after {
     border: 1px solid rgb(229,66,67);
     background: rgb(255,94,92);
   }
 
-  .vt-window-osx [name='controls'] button[name="close"]:after {
-    border: 1px solid rgb(229,66,67);
-    background: rgb(255,94,92);
-  }
-
-  .vt-window-osx [name='controls'] button[name="maximize"]:after {
+  .vt-window-osx.focus [name='controls'] button[name="maximize"]:after {
     border: 1px solid rgb(20,174,21);
     background: rgb(55,201,64);
   }
 
-  .vt-window-osx [name='controls'] button[name="minimize"]:after {
+  .vt-window-osx.focus [name='controls'] button[name="minimize"]:after {
     border: 1px solid rgb(226,159,64);
     background: rgb(255,189,77);
   }
 
-  .vt-window-osx [name='controls'] button:disabled:after {
+  .vt-window-osx.focus [name='controls'] button:disabled:after {
     border: 1px solid rgb(180,180,180);
     background: rgb(204,204,204);
   }
@@ -186,7 +187,7 @@
     display: -webkit-flex;
     display: -ms-flexbox;
     display: flex; */
-    background: rgba(236,236,236);
+    background: rgb(236,236,236);
   }
   .vt-window-osx.drag {
     /* will-change: top, left, width, height, transform; */

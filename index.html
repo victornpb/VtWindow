@@ -7,8 +7,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>VtWindow.js - synthetic windowing javascript library</title>
     <link rel="stylesheet" href="vtwindow.css">
-    <link rel="stylesheet" href="vtwindow-theme.css">
-    <link rel="stylesheet" href="vtwindow-theme.1.css">
+    <link rel="stylesheet" href="vtwindow-theme.material.css">
+    <link rel="stylesheet" href="vtwindow-theme.osx.css">
     <script src="vtwindow.js"></script>
     <!-- Compiled and minified CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css">
@@ -71,7 +71,7 @@
         var w2 = new VtWindow(null, { template: osx.innerHTML });
         w2.mount();
         w2.setTitle('Digital Color Meter');
-        w2.setBody('FOO BAR');
+        w2.setBody(`<div style="padding: 10px; text-align: center; width: 100%;"><h4>Hello World!</h4></div>`);
         w2.top = 100;
         w2.left = 100;
         w2.width = 374;
