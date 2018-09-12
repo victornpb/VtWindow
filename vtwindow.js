@@ -62,7 +62,7 @@ class VtWindow {
       closable: true,
       maximizable: true,
       minimizable: true,
-      deatachable: true,
+      deatachable: false, //needs polishing
       resizable: true,
 
       preserveFocusOrder: true, //preserve window order after focusing (disable if you need to use iframes inside windows)
