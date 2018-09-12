@@ -436,7 +436,7 @@ class VtWindow {
     this.el.style.top = `${px}px`;
   }
   get top() {
-    return parseInt(this.el.style.top, 10);
+    return parseFloat(this.el.style.top, 10);
   }
   /**
    * Position from the left in pixels
@@ -447,7 +447,7 @@ class VtWindow {
     this.el.style.left = `${px}px`;
   }
   get left() {
-    return parseInt(this.el.style.left, 10);
+    return parseFloat(this.el.style.left, 10);
   }
   /**
    * Width in pixels
@@ -458,7 +458,7 @@ class VtWindow {
     this.el.style.width = `${px}px`;
   }
   get width() {
-    return parseInt(this.el.style.width, 10);
+    return parseFloat(this.el.style.width, 10);
   }
   /**
    * Height in pixels
@@ -469,7 +469,7 @@ class VtWindow {
     this.el.style.height = `${px}px`;
   }
   get height() {
-    return parseInt(this.el.style.height, 10);
+    return parseFloat(this.el.style.height, 10);
   }
 }
 
