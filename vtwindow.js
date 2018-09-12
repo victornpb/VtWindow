@@ -411,6 +411,13 @@ class VtWindow {
     // this.DOM.maximize.style.display = bool ? '' : 'none';
     this.DOM.maximize.disabled = !bool;
 
+    if (bool) {
+      this.DOM.title.ondblclick = this.maximize.bind(this);
+    }
+    else {
+      this.DOM.title.ondblclick = null;
+    }
+
   }
   /**
    * Enable a virtual window to be deatachable from anoter window (popup)
