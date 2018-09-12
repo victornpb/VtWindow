@@ -217,7 +217,7 @@ class VtWindow {
     this.setBody(content.body);
 
     if (this.options.autoMount) this.mount();
-    
+
     Object.seal(this);
   }
 
@@ -499,6 +499,9 @@ class Drag {
       yAxis: true,
 
       draggingClass: 'drag',
+
+      useMouseEvents: true,
+      useTouchEvents: true,
     }, options);
 
     this.minWidth = this.options.minWidth;
@@ -576,14 +579,16 @@ class Drag {
         vw = window.innerWidth;
         vh = window.innerHeight;
 
-        //mouse events
-        document.addEventListener('mousemove', this._dragMoveHandler);
-        document.addEventListener('mouseup', this._dragEndHandler);
-        //touch events
-        document.addEventListener('touchmove', this._dragMoveHandler, {
-          passive: false,
-        });
-        document.addEventListener('touchend', this._dragEndHandler);
+        if (this.options.useMouseEvents) {
+          document.addEventListener('mousemove', this._dragMoveHandler);
+          document.addEventListener('mouseup', this._dragEndHandler);
+        }
+        if (this.options.useTouchEvents) {
+          document.addEventListener('touchmove', this._dragMoveHandler, {
+            passive: false,
+          });
+          document.addEventListener('touchend', this._dragEndHandler);
+        }
 
         this._targetElm.classList.add(this.draggingClass);
       }
@@ -615,13 +620,14 @@ class Drag {
     }
 
     function dragEndHandler(e) {
-      //touch events
-      document.removeEventListener('mousemove', this._dragMoveHandler);
-      document.removeEventListener('mouseup', this._dragEndHandler);
-      //mouse events
-      document.removeEventListener('touchmove', this._dragMoveHandler);
-      document.removeEventListener('touchend', this._dragEndHandler);
-
+      if (this.options.useMouseEvents) {
+        document.removeEventListener('mousemove', this._dragMoveHandler);
+        document.removeEventListener('mouseup', this._dragEndHandler);
+      }
+      if (this.options.useTouchEvents) {
+        document.removeEventListener('touchmove', this._dragMoveHandler);
+        document.removeEventListener('touchend', this._dragEndHandler);
+      }
       this._targetElm.classList.remove(this.draggingClass);
     }
 
@@ -642,8 +648,8 @@ class Drag {
    */
   enable() {
     this.destroy(); // prevent events from getting binded twice
-    this._handleElm.addEventListener('mousedown', this._dragStartHandler);
-    this._handleElm.addEventListener('touchstart', this._dragStartHandler, { passive: false });
+    if (this.options.useMouseEvents) this._handleElm.addEventListener('mousedown', this._dragStartHandler);
+    if (this.options.useTouchEvents) this._handleElm.addEventListener('touchstart', this._dragStartHandler, { passive: false });
   }
 
   /**
@@ -654,14 +660,16 @@ class Drag {
   destroy() {
     this._targetElm.classList.remove(this.draggingClass);
 
-    //mouse events
-    this._handleElm.removeEventListener('mousedown', this._dragStartHandler);
-    document.removeEventListener('mousemove', this._dragMoveHandler);
-    document.removeEventListener('mouseup', this._dragEndHandler);
-    //touch events
-    this._handleElm.addEventListener('touchstart', this._dragStartHandler);
-    document.removeEventListener('touchmove', this._dragMoveHandler);
-    document.removeEventListener('touchend', this._dragEndHandler);
+    if (this.options.useMouseEvents) {
+      this._handleElm.removeEventListener('mousedown', this._dragStartHandler);
+      document.removeEventListener('mousemove', this._dragMoveHandler);
+      document.removeEventListener('mouseup', this._dragEndHandler);
+    }
+    if (this.options.useTouchEvents) {
+      this._handleElm.addEventListener('touchstart', this._dragStartHandler);
+      document.removeEventListener('touchmove', this._dragMoveHandler);
+      document.removeEventListener('touchend', this._dragEndHandler);
+    }
   }
 }
 
