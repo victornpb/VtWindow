@@ -158,6 +158,15 @@
     background: rgb(255,189,77);
   }
 
+  .vt-window-osx.focus [name='controls'] button[name="popout"]:before {
+    border: 1px solid rgb(64, 145, 226);
+    background: rgb(92, 173, 255);
+  }
+
+  .vt-window-osx [name='controls'] button[name="popout"]:disabled {
+    display: none;
+  }
+
   .vt-window-osx.focus [name='controls'] button:disabled:before {
     border: 1px solid rgb(180,180,180);
     background: rgb(204,204,204);
