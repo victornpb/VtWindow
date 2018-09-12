@@ -40,61 +40,132 @@
     </template>
 
     <template id="osx">
-            <div role="dialog" aria-label="" class="vt-window-osx">
-                <div name="header" class="">
-                    <span name="title">${content.title}</span>
-                    <span name="controls">
-                        <button name="close" class="" title="Close"></button>
-                        <button name="minimize" class="" title="Minimize"></button>
-                        <button name="maximize" class="" title="Maximize"></button>
-                        <button name="popout" class="" title="Deattatch"></button>
-                    </span>
-                </div>
-                <div name="body">
-                    ${content.body}
-                    <input type="text">
-                </div>
-                <div name="footer">
-                    <div name="grab"></div>
-                </div>
+        <div role="dialog" aria-label="" class="vt-window-osx">
+            <div name="header" class="">
+                <span name="title">${content.title}</span>
+                <span name="controls">
+                    <button name="close" class="" title="Close"></button>
+                    <button name="minimize" class="" title="Minimize"></button>
+                    <button name="maximize" class="" title="Maximize"></button>
+                    <button name="popout" class="" title="Deattatch"></button>
+                </span>
             </div>
-        </template>
+            <div name="body">
+                ${content.body}
+                <input type="text">
+            </div>
+            <div name="footer">
+                <div name="grab"></div>
+            </div>
+        </div>
+    </template>
 
-        <img src="osx.png" style="outline: 1px solid">
+    <!-- <img src="osx.png" style="outline: 1px solid">
         <img src="osx2.png" style="outline: 1px solid">
-   
+    -->
+
+    <input type="button" value="Create a bunch" onclick="openAlot()">
+    <input type="button" value="Close windows" onclick="closeAll()">
+
+
     <script>
 
-        // var w1 = new VtWindow({title:'material',body:'Material'}, { template: m.innerHTML });
-        // w1.mount();
 
-        var w2 = new VtWindow(null, { template: osx.innerHTML });
-        w2.mount();
-        w2.setTitle('Digital Color Meter');
-        w2.setBody(`<div style="padding: 10px; text-align: center; width: 100%;"><h4>Hello World!</h4></div>`);
-        w2.top = 100;
-        w2.left = 100;
-        w2.width = 374;
-        w2.height = 206;
-        // w2.closable = false;
+        var wm1 = new VtWindow({ title: 'Material Window', body: '<div style="padding: 10px; text-align: center; width: 100%;"><h4>Hello World!</h4></div>' }, { template: m.innerHTML, top: 30, left: 10, autoMount: true });
+        var wm2 = new VtWindow({ title: 'VtWindow Material', body: '<div style="padding: 10px; text-align: center; width: 100%;"><h4>Hello World!</h4></div>' }, { template: m.innerHTML, top: 80, left: 50, autoMount: true });
+
+
+        var w1 = new VtWindow(null, { template: osx.innerHTML, resizable: false, maximizable: false });
+        w1.mount();
+        w1.setTitle('w1');
+        w1.setBody(`<div style="padding: 10px; text-align: center; width: 100%;"><h4>Hello World!</h4><p>Try the manipulating the <var>w1</var> object on console</p></div>`);
+        w1.top = 220;
+        w1.left = 220;
+        w1.width = 374;
+        w1.height = 206;
+
+        console.log('Type w1\n\nyou can set the position by setting w1.top=0\n', w1);
+        
+
+
+        var w2 = new VtWindow(null, { template: osx.innerHTML , top: 30, left: 460, width: 300, height: 300});
+        w2.setTitle('VtWindow OSX');
+        w2.setBody(`<div style="padding: 10px; text-align: center; width: 100%;"><h4>Hello World!</h4>
+            <input class="t" type="range" min=50 max=400>
+            <input class="l" type="range" min=50 max=400>
+            <input class="w" type="range" min=50 max=400>
+            <input class="h" type="range" min=50 max=400>
+            <input class="mount" type="button" value="mount">
+            <input class="unmount" type="button" value="unmount">
+            <input class="open" type="button" value="open">
+            <input class="close" type="button" value="close">
+            <input class="minimize" type="button" value="minimize">
+            <input class="maximize" type="button" value="maximize">
+            -
+            <input class="closable" type="checkbox" value="closable">
+            <input class="minimizable" type="checkbox" value="minimizable">
+            <input class="maximizable" type="checkbox" value="maximizable">
+
+        </div>`);
+        w2.closable = false;
         // w2.minimizable = false;
-        w2.maximizable = false;
+        // w2.maximizable = false;
         // w2.deatachable = false;
+        w2.el.querySelector('input.t').oninput = (e)=>{ w1.top = e.target.value; }
+        w2.el.querySelector('input.l').oninput = (e)=>{ w1.left = e.target.value; }
+        w2.el.querySelector('input.w').oninput = (e)=>{ w1.width = e.target.value; }
+        w2.el.querySelector('input.h').oninput = (e)=>{ w1.height = e.target.value; }
+        w2.el.querySelector('input.open').onclick = (e)=>{ w1.show(); }
+        w2.el.querySelector('input.close').onclick = (e)=>{ w1.hide(); }
+        w2.el.querySelector('input.minimize').onclick = (e)=>{ w1.minimize(); }
+        w2.el.querySelector('input.maximize').onclick = (e)=>{ w1.maximize(); }
+        w2.el.querySelector('input.mount').onclick = (e)=>{ w1.mount(); }
+        w2.el.querySelector('input.unmount').onclick = (e)=>{ w1.unmount(); }
+        w2.el.querySelector('input.closable').oninput = (e)=>{ w1.closable = e.target.checked; }
+        w2.el.querySelector('input.maximizable').oninput = (e)=>{ w1.maximizable = e.target.checked; }
+        w2.el.querySelector('input.minimizable').oninput = (e)=>{ w1.minimizable = e.target.checked; }
+        w2.mount();
+        w2.focus();
 
 
-        // var w3 = new VtWindow(null, {preserveFocusOrder:false, lowEnd: true});
-        // w3.mount();
+        var w3 = new VtWindow(null, {template: osx.innerHTML, preserveFocusOrder: false});
+        w3.setTitle('MyWindow');
+        w3.setBody(`<iframe width="100%" height="100%" src="https://www.youtube.com/embed/lAkuJXGldrM" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="position:absolute;"></iframe>`);
+        w3.top = 360;
+        w3.left = 480;
+        w3.width = 320;
+        w3.height = 250;
+        w3.mount();
 
 
-        // var w3 = new VtWindow(null, {preserveFocusOrder:false});
-        // w3.mount();
-        // w3.setTitle('MyWindow');
-        // w3.setBody(`<iframe width="100%" height="100%" src="https://www.youtube.com/embed/gnKt_QHehZc" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="position:absolute;"></iframe>`);
-        // w3.top = 200;
-        // w3.left = 200;
-        // w3.width = 250;
-        // w3.height = 200;
 
+        let instances = [];
+
+        function openAlot(){
+
+            const x = 50+ (Math.random()*400);
+            const y = 50+ (Math.random()*400);
+
+            for(let i=0;i<10;i++){
+
+                let w1 = new VtWindow(null, { template: osx.innerHTML , top: y+(8*i), left: x+(20*i), width: 300, height: 300});
+                w1.setTitle('VtWindow OSX');
+                w1.setBody(`<div style="padding: 10px; text-align: center; width: 100%;"><h4>Hello World!</h4></div>`);
+                w1.mount();
+
+                instances.push(w1);
+            }
+        }
+
+        function closeAll(){
+            for(let i=0; i<instances.length; i++){
+                instances[i].unmount();
+                delete instances[i];
+            }
+            instances = [];
+        }
+
+        
 
 
     </script>
