@@ -25,7 +25,7 @@ class VtWindow {
    * 
    * @param  {boolean} [options.preserveFocusOrder=true] Preserve window order after focusing (disable if you need to use iframes inside windows)
    * @param  {boolean} [options.autoMount=false] Automatically call mount() after instantiation
-   * @param  {boolean} [options.lowEnd=false] Turn on optimazations for low end devices
+   * @param  {boolean} [options.lowEnd=false] Turn on optimizations for low end devices
    * 
    * @param  {function} [options.onMinimize] Callback on Minimize
    * @param  {function} [options.onMaximize] Callback on Maximize
@@ -154,6 +154,17 @@ class VtWindow {
       resize: $('[name=grab]'),
     };
 
+    this.onMinimize = this.options.onMinimize;
+    this.onMaximize = this.options.onMinimize;
+    this.onMount = this.options.onMinimize;
+    this.onUnmount = this.options.onMinimize;
+    this.onShow = this.options.onMinimize;
+    this.onHide = this.options.onMinimize;
+    this.onPopout = this.options.onMinimize;
+    this.onExitPopout = this.options.onMinimize;
+    this.onFocus = this.options.onMinimize;
+    this.onBlur = this.options.onMinimize;
+
     // bind events
     this.DOM.close.onclick = this.hide.bind(this);
     this.DOM.popout.onclick = this.popout.bind(this);
@@ -229,13 +240,13 @@ class VtWindow {
     this._mounted = true; // modify props only after the append was successful
     this.constrain();
 
-    if (this.options.onMount) this.options.onMount(this);
+    if (this.onMount) this.onMount(this);
   }
   unmount() {
     this._container.removeChild(this.el);
     this._mounted = false; // modify props only after the append was successful
    
-    if (this.options.onUnmount) this.options.onUnmount(this);
+    if (this.onUnmount) this.onUnmount(this);
   }
   get isMounted() {
     return this._mounted; //TODO: verify if this.el is inside this._container
@@ -243,11 +254,11 @@ class VtWindow {
   show() {
     this.el.style.display = '';
     this.constrain();
-    if (this.options.onShow) this.options.onShow(this);
+    if (this.onShow) this.onShow(this);
   }
   hide() {
     this.el.style.display = 'none';
-    if (this.options.onHide) this.options.onHide(this);
+    if (this.onHide) this.onHide(this);
   }
   minimize(bool) {
     if (this._maximized) {
@@ -261,7 +272,7 @@ class VtWindow {
     
     this.constrain();
 
-    if (this.options.onMinimize) this.options.onMinimize(this);
+    if (this.onMinimize) this.onMinimize(this);
   }
   get isMinimized() {
     return this._minimized;
@@ -275,7 +286,7 @@ class VtWindow {
     this.el.classList.toggle('maximized', this._maximized);
     this.constrain();
     
-    if (this.options.onMaximize) this.options.onMaximize(this);
+    if (this.onMaximize) this.onMaximize(this);
   }
   get isMaximized() {
     return this._maximized;
@@ -309,14 +320,14 @@ class VtWindow {
       this.exitpopout();
     };
 
-    if (this.options.onPopout) this.options.onPopout(this);
+    if (this.onPopout) this.onPopout(this);
   }
 
   exitpopout() {
     this.el.classList.remove('windowed');
     this.mount();
 
-    if (this.options.onExitPopout) this.options.onExitPopout(this);
+    if (this.onExitPopout) this.onExitPopout(this);
   }
 
   focus() {
@@ -338,7 +349,7 @@ class VtWindow {
 
     this.constrain();
 
-    if (this.options.onFocus) this.options.onFocus(this);
+    if (this.onFocus) this.onFocus(this);
   }
 
   blur() {
@@ -352,7 +363,7 @@ class VtWindow {
 
     this.constrain();
 
-    if (this.options.onBlur) this.options.onBlur(this);
+    if (this.onBlur) this.onBlur(this);
   }
 
   constrain() { 
@@ -500,7 +511,7 @@ class VtWindow {
 
 class Drag {
   /**
-   * Make a element draggable/resizable
+   * Make an element draggable/resizable
    * @param {Element} targetElm The element that will be dragged/resized
    * @param {Element} handleElm The element that will listen to events (handdle/grabber)
    * @param {object} [options] Options
@@ -509,6 +520,11 @@ class Drag {
    * @param {number} [options.maxWidth=Infinity] Maximum width allowed to resize
    * @param {number} [options.minHeight=100] Maximum height allowed to resize
    * @param {number} [options.maxHeight=Infinity] Maximum height allowed to resize
+   * @param {string} [options.draggingClass="drag"] Class added to targetElm while being dragged
+   * @param {boolean} [options.useMouseEvents=true] Use mouse events
+   * @param {boolean} [options.useTouchEvents=true] Use touch events
+   * 
+   * @author Victor N. wwww.vitim.us
    */
   constructor(targetElm, handleElm, options) {
     this.options = Object.assign({
@@ -527,6 +543,7 @@ class Drag {
       useTouchEvents: true,
     }, options);
 
+    // Public properties
     this.minWidth = this.options.minWidth;
     this.maxWidth = this.options.maxWidth;
     this.minHeight = this.options.minHeight;
@@ -540,7 +557,7 @@ class Drag {
     /** @private */
     this._handleElm = handleElm;
 
-    const move = (x, y) => {
+    const moveOp = (x, y) => {
       let l = x - offLeft;
       if (x - offLeft < 0) l = 0; //offscreen <-
       else if (x - offRight > vw) l = vw - this._targetElm.clientWidth; //offscreen ->
@@ -548,14 +565,13 @@ class Drag {
       if (y - offTop < 0) t = 0; //offscreen /\
       else if (y - offBottom > vh) t = vh - this._targetElm.clientHeight; //offscreen \/
       
-      if(this.xAxis)
-        this._targetElm.style.left = `${l}px`;
-      if(this.yAxis)
-        this._targetElm.style.top = `${t}px`;
-      // this._targetElm.style.transform = `translate(${l}px, ${t}px)`; // profilling wasn't faster than top/left as expected
+      if(this.xAxis) this._targetElm.style.left = `${l}px`;
+      if(this.yAxis) this._targetElm.style.top = `${t}px`;
+      // NOTE: profilling on chrome translate wasn't faster than top/left as expected. And it also permanently creates a new layer, increasing vram usage.
+      // this._targetElm.style.transform = `translate(${l}px, ${t}px)`;
     };
 
-    const resize = (x, y) => {
+    const resizeOp = (x, y) => {
       let w = x - this._targetElm.offsetLeft - offRight;
       if (x - offRight > vw) w = Math.min(vw - this._targetElm.offsetLeft, this.maxWidth); //offscreen ->
       else if (x - offRight - this._targetElm.offsetLeft > this.maxWidth) w = this.maxWidth; //max width
@@ -563,16 +579,14 @@ class Drag {
       let h = y - this._targetElm.offsetTop - offBottom;       
       if (y - offBottom > vh) h = Math.min(vh - this._targetElm.offsetTop, this.maxHeight); //offscreen \/
       else if (y - offBottom - this._targetElm.offsetTop > this.maxHeight) h = this.maxHeight; //max height
-      else if (y- offBottom - this._targetElm.offsetTop < this.minHeight) h = this.minHeight; //min height
+      else if (y - offBottom - this._targetElm.offsetTop < this.minHeight) h = this.minHeight; //min height
 
-      if(this.xAxis)
-        this._targetElm.style.width = `${w}px`;
-      if(this.yAxis)
-        this._targetElm.style.height = `${h}px`;
+      if(this.xAxis) this._targetElm.style.width = `${w}px`;
+      if(this.yAxis) this._targetElm.style.height = `${h}px`;
     };
 
      // define which operation is performed on drag
-     const operation = this.options.mode === 'move' ? move : resize;
+     const operation = this.options.mode === 'move' ? moveOp : resizeOp;
 
      // offset from the initial click to the target boundaries
      let offTop, offLeft, offBottom, offRight;
@@ -697,35 +711,3 @@ class Drag {
 }
 
 // export default VtWindow;
-
-// function throttle(func, wait, options) {
-//   var context, args, result;
-//   var timeout = null;
-//   var previous = 0;
-//   if (!options) options = {};
-//   var later = function() {
-//     previous = options.leading === false ? 0 : Date.now();
-//     timeout = null;
-//     result = func.apply(context, args);
-//     if (!timeout) context = args = null;
-//   };
-//   return function() {
-//     var now = Date.now();
-//     if (!previous && options.leading === false) previous = now;
-//     var remaining = wait - (now - previous);
-//     context = this;
-//     args = arguments;
-//     if (remaining <= 0 || remaining > wait) {
-//       if (timeout) {
-//         clearTimeout(timeout);
-//         timeout = null;
-//       }
-//       previous = now;
-//       result = func.apply(context, args);
-//       if (!timeout) context = args = null;
-//     } else if (!timeout && options.trailing !== false) {
-//       timeout = setTimeout(later, remaining);
-//     }
-//     return result;
-//   };
-// }
