@@ -113,6 +113,8 @@ class VtWindow {
     this._minimized = false;
     /** @private */
     this._focused = false;
+    /** @private */
+    this._popup = false;
 
     /**
      * The window root element
@@ -280,14 +282,14 @@ class VtWindow {
     }, top=${this.el.offsetTop + wTop}, left=${this.el.offsetLeft + wLeft}`;
     // console.log(s);
 
-    this.popup = window.open('', this._id, s);
+    this._popup = window.open('', this._id, s);
 
     // this._mounted = false;
     this.unmount();
-    this.popup.document.body.appendChild(this.el);
-    this.popup.document.title = this.DOM.title.innerText;
+    this._popup.document.body.appendChild(this.el);
+    this._popup.document.title = this.DOM.title.innerText;
 
-    const popupHead = this.popup.document.getElementsByTagName('head')[0];
+    const popupHead = this._popup.document.getElementsByTagName('head')[0];
     document.querySelectorAll('style,link').forEach(el => {
       popupHead.appendChild(el.cloneNode(true));
     });
@@ -295,7 +297,7 @@ class VtWindow {
     this.el.classList.add('windowed');
     this.el.classList.remove('virtual');
 
-    this.popup.onbeforeunload = () => {
+    this._popup.onbeforeunload = () => {
       this.exitpopout();
     };
 
