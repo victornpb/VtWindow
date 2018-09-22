@@ -227,6 +227,7 @@ class VtWindow {
     this._container.appendChild(this.el);
     this.el.classList.add('virtual');
     this._mounted = true; // modify props only after the append was successful
+    this.constrain();
 
     if (this.options.onMount) this.options.onMount(this);
   }
@@ -241,6 +242,7 @@ class VtWindow {
   }
   show() {
     this.el.style.display = '';
+    this.constrain();
     if (this.options.onShow) this.options.onShow(this);
   }
   hide() {
@@ -256,6 +258,8 @@ class VtWindow {
     this.el.classList.toggle('minimized', this._minimized);
 
     this._dragMove.yAxis = !this._minimized; //turn off dragging in the vertical direction (stuck to bottom)
+    
+    this.constrain();
 
     if (this.options.onMinimize) this.options.onMinimize(this);
   }
@@ -265,8 +269,8 @@ class VtWindow {
   maximize() {
     this._maximized = !this._maximized;
     this.el.classList.toggle('maximized', this._maximized);
-    // this.el.style.top = '0';
-    // this.el.style.left = '0';
+    this.constrain();
+    
     if (this.options.onMaximize) this.options.onMaximize(this);
   }
   get isMaximized() {
@@ -328,6 +332,8 @@ class VtWindow {
     this.el.removeEventListener('mousedown', this._focusHandler); //already focused we don't need to listen to this event anymore
     document.addEventListener('mousedown', this._blurHandler); //register event waiting for a click outsised (aka blur)
 
+    this.constrain();
+
     if (this.options.onFocus) this.options.onFocus(this);
   }
 
@@ -340,7 +346,18 @@ class VtWindow {
     document.removeEventListener('mousedown', this._blurHandler); //already blurred we don't need to listen to this event anymore
     this.el.addEventListener('mousedown', this._focusHandler); //register event waiting for a click inside (aka focus)
 
+    this.constrain();
+
     if (this.options.onBlur) this.options.onBlur(this);
+  }
+
+  constrain() { 
+    if (this.left > window.innerWidth - this.width) this.left = Math.max(window.innerWidth - this.width, 0);
+    else if (this.left < 0) this.left = 0;
+    if (this.top > window.innerHeight - this.height) this.top = Math.max(window.innerHeight - this.height, 0);
+    else if (this.top < 0) this.top = 0;
+    if (this.width > window.innerWidth) this.width = window.innerWidth;
+    if (this.height > window.innerHeight) this.height = window.innerHeight;
   }
 
   get isFocused() {
