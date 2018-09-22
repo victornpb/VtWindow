@@ -240,13 +240,13 @@ class VtWindow {
     this._mounted = true; // modify props only after the append was successful
     this.constrain();
 
-    if (this.onMount) this.onMount(this);
+    if (typeof this.onMount==='function') this.onMount.call(this);
   }
   unmount() {
     this._container.removeChild(this.el);
     this._mounted = false; // modify props only after the append was successful
    
-    if (this.onUnmount) this.onUnmount(this);
+    if (typeof this.onUnmount==='function') this.onUnmount.call(this);
   }
   get isMounted() {
     return this._mounted; //TODO: verify if this.el is inside this._container
@@ -254,11 +254,11 @@ class VtWindow {
   show() {
     this.el.style.display = '';
     this.constrain();
-    if (this.onShow) this.onShow(this);
+    if (typeof this.onShow==='function') this.onShow.call(this);
   }
   hide() {
     this.el.style.display = 'none';
-    if (this.onHide) this.onHide(this);
+    if (typeof this.onHide==='function') this.onHide.call(this);
   }
   minimize(bool) {
     if (this._maximized) {
@@ -272,7 +272,7 @@ class VtWindow {
     
     this.constrain();
 
-    if (this.onMinimize) this.onMinimize(this);
+    if (typeof this.onMinimize==='function') this.onMinimize.call(this);
   }
   get isMinimized() {
     return this._minimized;
@@ -286,7 +286,7 @@ class VtWindow {
     this.el.classList.toggle('maximized', this._maximized);
     this.constrain();
     
-    if (this.onMaximize) this.onMaximize(this);
+    if (typeof this.onMaximize==='function') this.onMaximize.call(this);
   }
   get isMaximized() {
     return this._maximized;
@@ -320,14 +320,14 @@ class VtWindow {
       this.exitpopout();
     };
 
-    if (this.onPopout) this.onPopout(this);
+    if (typeof this.onPopout==='function') this.onPopout.call(this);
   }
 
   exitpopout() {
     this.el.classList.remove('windowed');
     this.mount();
 
-    if (this.onExitPopout) this.onExitPopout(this);
+    if (typeof this.onExitPopout==='function') this.onExitPopout.call(this);
   }
 
   focus() {
@@ -349,7 +349,7 @@ class VtWindow {
 
     this.constrain();
 
-    if (this.onFocus) this.onFocus(this);
+    if (typeof this.onFocus==='function') this.onFocus.call(this);
   }
 
   blur() {
@@ -363,7 +363,7 @@ class VtWindow {
 
     this.constrain();
 
-    if (this.onBlur) this.onBlur(this);
+    if (typeof this.onBlur==='function') this.onBlur.call(this);
   }
 
   constrain() { 
