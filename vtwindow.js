@@ -249,12 +249,12 @@ class VtWindow {
     this.el.style.display = 'none';
     if (this.options.onHide) this.options.onHide(this);
   }
-  minimize() {
+  minimize(bool) {
     if (this._maximized) {
       this.maximize(false); //restore
     }
 
-    this._minimized = !this._minimized;
+    this._minimized = typeof bool==='boolean' ? bool : !this._minimized;
     this.el.classList.toggle('minimized', this._minimized);
 
     this._dragMove.yAxis = !this._minimized; //turn off dragging in the vertical direction (stuck to bottom)
@@ -266,8 +266,12 @@ class VtWindow {
   get isMinimized() {
     return this._minimized;
   }
-  maximize() {
-    this._maximized = !this._maximized;
+  maximize(bool) {
+    if (this._minimized) {
+      this.minimize(false); //restore
+    }
+    
+    this._maximized = typeof bool==='boolean' ? bool : !this._maximized;
     this.el.classList.toggle('maximized', this._maximized);
     this.constrain();
     
