@@ -1,8 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-  typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  (factory((global.VtWindow = {})));
-}(this, (function (exports) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+  typeof define === 'function' && define.amd ? define(factory) :
+  (global.VtWindow = factory());
+}(this, (function () { 'use strict';
 
   class Drag {
       /**
@@ -716,9 +716,7 @@
     }
   }
 
-  exports.VtWindow = VtWindow;
-
-  Object.defineProperty(exports, '__esModule', { value: true });
+  return VtWindow;
 
 })));
 //# sourceMappingURL=vtwindow.js.map

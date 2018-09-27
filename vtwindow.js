@@ -6,7 +6,7 @@ import Drag from './drag.js';
  * @author Victor N. wwww.vitim.us
  * 
  */
-export class VtWindow {
+export default class VtWindow {
   /**
    * @param  {object} [content] Object with the initial content
    * @param  {string|Element} [content.title] Title of the window
