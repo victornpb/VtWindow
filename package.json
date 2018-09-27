@@ -2,7 +2,7 @@
   "name": "vtwindow",
   "version": "0.1.0",
   "description": "A Virtual windowing system for the browser written in vanilla js",
-  "main": "vtwindow.js",
+  "main": "build/vtwindow.js",
   "scripts": {
     "start": "rollup --watch --format umd --name VtWindow --sourcemap --input vtwindow.js --file build/vtwindow.js",
     "build": "rollup --format umd --name VtWindow --sourcemap --input vtwindow.js --file build/vtwindow.js",

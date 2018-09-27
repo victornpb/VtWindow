@@ -13,14 +13,29 @@
     <!-- Compiled and minified CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        #wallpaper{
+            position: absolute;
+            
+            top:0;
+            left:0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
 
+            background: rgb(206,220,231);
+            background: linear-gradient(to bottom, rgba(206,220,231,1) 0%,rgba(89,106,114,1) 100%);;
+        }
+    </style>
 </head>
 
 <body>
 
+    <div id="wallpaper"></div>
+
     <template id="m">
         <div role="dialog" aria-label="" class="vt-window-material">
-            <div name="header" class="valign-wrapper deep-purple">
+            <div name="header" class="valign-wrapper indigo">
                 <span name="title">${content.title}</span>
                 <span name="controls">
                     <button name="popout" class="btn-flat" title="Deattatch"><i class="material-icons">launch</i></button>
@@ -71,14 +86,13 @@
     <script>
 
 
-        var wm1 = new VtWindow({ title: 'Material Window', body: '<div style="padding: 10px; text-align: center; width: 100%;"><h4>Hello World!</h4></div>' }, { template: m.innerHTML, top: 30, left: 10, autoMount: true });
-        var wm2 = new VtWindow({ title: 'VtWindow Material', body: '<div style="padding: 10px; text-align: center; width: 100%;"><h4>Hello World!</h4></div>' }, { template: m.innerHTML, top: 80, left: 50, autoMount: true });
+        var wm1 = new VtWindow({ title: 'Material Window', body: '<div style="padding: 10px; text-align: center; width: 100%;"><h4>Material Design</h4></div>' }, { template: m.innerHTML, top: 30, left: 10, autoMount: true });
+        var wm2 = new VtWindow({ title: 'Lorem Ipsum', body: '<div style="padding: 10px; text-align: center; width: 100%;"><h4>Lorem Ipsum</h4></div>' }, { template: m.innerHTML, top: 80, left: 50, autoMount: true });
 
 
-        var w1 = new VtWindow(null, { template: osx.innerHTML, resizable: false, maximizable: false });
-        w1.mount();
-        w1.setTitle('w1');
-        w1.setBody(`<div style="padding: 10px; text-align: center; width: 100%;"><h4>Hello World!</h4><p>Try the manipulating the <var>w1</var> object on console</p></div>`);
+        var w1 = new VtWindow(null, { template: osx.innerHTML, resizable: true, maximizable: true });
+        w1.setTitle('window.w1');
+        w1.setBody(`<div style="padding: 10px; text-align: center; width: 100%;"><h4>Hello World!</h4><p>Try the manipulating the <var>w1</var> object in the console</p></div>`);
         w1.top = 220;
         w1.left = 220;
         w1.width = 374;
@@ -88,9 +102,9 @@
         
 
 
-        var w2 = new VtWindow(null, { template: osx.innerHTML , top: 30, left: 460, width: 300, height: 300});
+        var w2 = new VtWindow(null, { template: osx.innerHTML , top: 30, left: 460, width: 300, height: 300, deatachable: true});
         w2.setTitle('VtWindow OSX');
-        w2.setBody(`<div style="padding: 10px; text-align: center; width: 100%;"><h4>Hello World!</h4>
+        w2.setBody(`<div style="padding: 10px; text-align: center; width: 100%;"><h6>Demo</h6>
             <input class="t" type="range" min=-100 max=800>
             <input class="l" type="range" min=-100 max=800>
             <input class="w" type="range" min=-100 max=800>
@@ -125,7 +139,7 @@
         w2.el.querySelector('input.maximizable').oninput = (e)=>{ w1.maximizable = e.target.checked; }
         w2.el.querySelector('input.minimizable').oninput = (e)=>{ w1.minimizable = e.target.checked; }
         w2.mount();
-        w2.focus();
+        // w2.focus();
 
 
         var w3 = new VtWindow(null, {template: osx.innerHTML, preserveFocusOrder: false});
@@ -135,8 +149,11 @@
         w3.left = 480;
         w3.width = 320;
         w3.height = 250;
-        w3.mount();
+        // w3.mount();
 
+
+        w1.mount();
+        w1.focus();
 
 
         let instances = [];
@@ -146,20 +163,20 @@
             const x = 50+ (Math.random()*400);
             const y = 50+ (Math.random()*400);
 
-            for(let i=0;i<10;i++){
+            for(let i=0;i<100;i++){
 
-                let w1 = new VtWindow(null, { template: osx.innerHTML , top: y+(8*i), left: x+(20*i), width: 300, height: 300});
-                w1.setTitle('VtWindow OSX');
-                w1.setBody(`<div style="padding: 10px; text-align: center; width: 100%;"><h4>Hello World!</h4></div>`);
+                let w1 = new VtWindow({title: 'VtWindow OSX', body: `<div style="padding: 10px; text-align: center; width: 100%;"><h4>Hello World!</h4> <h1>${instances.length}</h1> </div>`}, { template: osx.innerHTML , top: y+(8*i), left: x+(20*i), width: 300, height: 300});
+                instances.push(w1);
+
                 w1.mount();
 
-                instances.push(w1);
             }
         }
 
         function closeAll(){
             for(let i=0; i<instances.length; i++){
-                instances[i].unmount();
+                if(instances[i].isMounted) instances[i].unmount();
+                instances[i].destroy();
                 delete instances[i];
             }
             instances = [];
