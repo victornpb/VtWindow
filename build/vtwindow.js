@@ -363,15 +363,15 @@
       };
 
       this.onMinimize = this.options.onMinimize;
-      this.onMaximize = this.options.onMinimize;
-      this.onMount = this.options.onMinimize;
-      this.onUnmount = this.options.onMinimize;
-      this.onShow = this.options.onMinimize;
-      this.onHide = this.options.onMinimize;
-      this.onPopout = this.options.onMinimize;
-      this.onExitPopout = this.options.onMinimize;
-      this.onFocus = this.options.onMinimize;
-      this.onBlur = this.options.onMinimize;
+      this.onMaximize = this.options.onMaximize;
+      this.onMount = this.options.onMount;
+      this.onUnmount = this.options.onUnmount;
+      this.onShow = this.options.onShow;
+      this.onHide = this.options.onHide;
+      this.onPopout = this.options.onPopout;
+      this.onExitPopout = this.options.onExitPopout;
+      this.onFocus = this.options.onFocus;
+      this.onBlur = this.options.onBlur;
 
       // bind events
       this.DOM.close.onclick = this.hide.bind(this);
