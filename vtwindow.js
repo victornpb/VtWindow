@@ -62,13 +62,14 @@ export default class VtWindow {
       closable: true,
       maximizable: true,
       minimizable: true,
-      deatachable: false, //needs polishing
+      deatachable: false, // needs polishing
       resizable: true,
 
-      preserveFocusOrder: true, //preserve window order after focusing (disable if you need to use iframes inside windows)
-      autoMount: false, //mount on new
+      preserveFocusOrder: true, // preserve window order after focusing (disable if you need to use iframes inside windows)
+      autoMount: false, // mount on new
       lowEnd: false,
 
+      // events
       onMinimize: null,
       onMaximize: null,
       onMount: null,
@@ -119,7 +120,7 @@ export default class VtWindow {
     this._popup = false;
 
     /**
-     * The window root element
+     * The vtwindow root element
      * @type {HTMLElement}
      */
     this.el = (() => {
@@ -136,7 +137,7 @@ export default class VtWindow {
      */
     const $ = selector => {
       const el = this.el.querySelector(selector);
-      if (!el) throw new Error(`The template doesn't not containg an element matching the selector ${selector}.\n ${this.el.innerHTML}`);
+      if (!el) throw new Error(`The template does not containg an element matching the selector ${selector}.\n ${this.el.innerHTML}`);
       return el;
     };
 
@@ -236,6 +237,41 @@ export default class VtWindow {
     Object.seal(this);
   }
 
+  destroy() {
+
+    if (this.isMounted) this.unmount();
+    this._dragMove.destroy();
+    this._dragMove = undefined;
+    this._dragResize.destroy();
+    this._dragResize = undefined;
+
+    // unbind events
+    this.el.removeEventListener('mousedown', this._focusHandler); 
+    document.removeEventListener('mousedown', this._blurHandler);
+    this.DOM.close.onclick =
+      this.DOM.popout.onclick =
+      this.DOM.minimize.onclick =
+      this.DOM.maximize.onclick =
+      this.DOM.title.ondblclick = undefined;
+     
+    //release handlers
+    this.onMinimize =
+      this.onMaximize =
+      this.onMount =
+      this.onUnmount =
+      this.onShow =
+      this.onHide =
+      this.onPopout =
+      this.onExitPopout =
+      this.onFocus =
+      this.onBlur = undefined;
+    this.options = undefined;
+    
+    //release DOM nodes
+    this.el = undefined;
+    this.DOM = undefined;
+  }
+  
   mount() {
     this._container.appendChild(this.el);
     this.el.classList.add('virtual');
