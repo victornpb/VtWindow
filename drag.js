@@ -173,7 +173,7 @@ export default class Drag {
      * @memberOf Drag
      */
     enable() {
-      this.destroy(); // prevent events from getting binded twice
+      // this.destroy(); // prevent events from getting binded twice
       if (this.options.useMouseEvents) this._handleElm.addEventListener('mousedown', this._dragStartHandler);
       if (this.options.useTouchEvents) this._handleElm.addEventListener('touchstart', this._dragStartHandler, { passive: false });
     }
@@ -192,7 +192,7 @@ export default class Drag {
         document.removeEventListener('mouseup', this._dragEndHandler);
       }
       if (this.options.useTouchEvents) {
-        this._handleElm.addEventListener('touchstart', this._dragStartHandler);
+        this._handleElm.removeEventListener('touchstart', this._dragStartHandler);
         document.removeEventListener('touchmove', this._dragMoveHandler);
         document.removeEventListener('touchend', this._dragEndHandler);
       }
