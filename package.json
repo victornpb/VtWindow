@@ -25,6 +25,6 @@
   },
   "homepage": "https://github.com/victornpb/VtWindow#readme",
   "devDependencies": {
-    "rollup": "^1.21.4"
+    "rollup": "^2.38.5"
   }
 }
