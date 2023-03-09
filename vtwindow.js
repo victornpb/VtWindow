@@ -154,7 +154,15 @@ export default class VtWindow {
       close: $('[name=close]'),
       body: $('[name=body]'),
       footer: $('[name=footer]'),
-      resize: $('[name=grab]'),
+      resize: $('[name=grab],[name=grab-br]'),
+      resizeTl: $('[name=grab],[name=grab-tl]'),
+      resizeBl: $('[name=grab],[name=grab-bl]'),
+      resizeTr: $('[name=grab],[name=grab-tr]'),
+      resizeBr: $('[name=grab],[name=grab-br]'),
+      resizeL: $('[name=grab],[name=grab-l]'),
+      resizeR: $('[name=grab],[name=grab-r]'),
+      resizeT: $('[name=grab],[name=grab-t]'),
+      resizeB: $('[name=grab],[name=grab-b]'),
     };
 
     this.onMinimize = this.options.onMinimize;
@@ -212,6 +220,15 @@ export default class VtWindow {
      * @private
      */
     this._dragResize = new Drag(this.el, this.DOM.resize, { mode: 'resize' });
+    this._dragResizeT = new Drag(this.el, this.DOM.resizeT, { mode: 'resize-t', maxWidth: this.options.maxWidth, maxHeight: this.options.maxHeight, minWidth: this.options.minWidth, minHeight: this.options.minHeight });
+    this._dragResizeB = new Drag(this.el, this.DOM.resizeB, { mode: 'resize-b', maxWidth: this.options.maxWidth, maxHeight: this.options.maxHeight, minWidth: this.options.minWidth, minHeight: this.options.minHeight });
+    this._dragResizeL = new Drag(this.el, this.DOM.resizeL, { mode: 'resize-l', maxWidth: this.options.maxWidth, maxHeight: this.options.maxHeight, minWidth: this.options.minWidth, minHeight: this.options.minHeight });
+    this._dragResizeR = new Drag(this.el, this.DOM.resizeR, { mode: 'resize-r', maxWidth: this.options.maxWidth, maxHeight: this.options.maxHeight, minWidth: this.options.minWidth, minHeight: this.options.minHeight });
+    this._dragResizeTl = new Drag(this.el, this.DOM.resizeTl, { mode: 'resize-tl', maxWidth: this.options.maxWidth, maxHeight: this.options.maxHeight, minWidth: this.options.minWidth, minHeight: this.options.minHeight });
+    this._dragResizeTr = new Drag(this.el, this.DOM.resizeTr, { mode: 'resize-tr', maxWidth: this.options.maxWidth, maxHeight: this.options.maxHeight, minWidth: this.options.minWidth, minHeight: this.options.minHeight });
+    this._dragResizeBl = new Drag(this.el, this.DOM.resizeBl, { mode: 'resize-bl', maxWidth: this.options.maxWidth, maxHeight: this.options.maxHeight, minWidth: this.options.minWidth, minHeight: this.options.minHeight });
+    this._dragResizeBr = new Drag(this.el, this.DOM.resizeBr, { mode: 'resize-br', maxWidth: this.options.maxWidth, maxHeight: this.options.maxHeight, minWidth: this.options.minWidth, minHeight: this.options.minHeight });
+
 
     this.blur(); //start on blurred state so the reciprocical blur/focus events starts 
     
